@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import {
     useAccount,
     useConnect,
@@ -17,7 +18,7 @@ const Profile = () => {
     if (isConnected) {
         return (
             <div>
-                <img src={ensAvatar ? ensAvatar : undefined} alt="ENS Avatar" />
+                <Image src="{ensAvatar ? ensAvatar : undefined}" alt="ENS Avatar" />
                 <div>{ensName ? `${ensName} (${address})` : address}</div>
                 <div>Connected to {connector?.name}</div>
                 <button onClick={() => disconnect()}>Disconnect</button>
