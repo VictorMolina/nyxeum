@@ -25,7 +25,7 @@ const Whitepaper = () => {
                     of this world willing to fight each other for survival.
                 </p>
             </div>
-            <div className={styles.mono_section}>
+            <div className={[styles.mono_section].join(" ")}>
                 <p className={[styles.subtitle, inter.className].join(" ")}>
                     2. How it works?
                 </p>
@@ -33,21 +33,21 @@ const Whitepaper = () => {
                     Nyxeum is an infinite-supply AI generated NFT collection. The value of each token relies on the
                     random values assigned to its metadata.
                 </p>
-            </div>
-            <div className={[styles.mono_section, styles.mermaid_chart].join(" ")}>
-                <Mermaid
-                    key={`whitepaper_hiw_1`}
-                    config={{mermaid: {theme: 'dark'}}}
-                    chart={`
-                        stateDiagram
-                        state NFT {
-                          Image
-                          STR/DEX/INT
-                          Traits
-                        }
-                    `} />
-            </div>
-            <div className={styles.mono_section}>
+                <br/>
+                <div className={styles.mermaid_chart}>
+                    <Mermaid
+                        key={`whitepaper_hiw_1`}
+                        config={{mermaid: {theme: 'dark'}}}
+                        chart={`
+                            stateDiagram
+                            state NFT {
+                              Image
+                              STR/DEX/INT
+                              Traits
+                            }
+                        `} />
+                </div>
+                <br/>
                 <p className={inter.className}>
                     NYX is an ERC20 token that brings life to Nyxeum NFTs. There is a fixed total supply of NYX that
                     will be spread between game and players. When an NFT is minted a bunch of NYX is assigned to it.
@@ -55,54 +55,54 @@ const Whitepaper = () => {
                     investment, such as exploring or attacking.
                     The result of these actions is randomly determined by the NFT metadata.
                 </p>
-            </div>
-            <div className={[styles.mono_section, styles.mermaid_chart].join(" ")}>
-                <Mermaid
-                    key={`whitepaper_hiw_2`}
-                    config={{mermaid: {theme: 'dark'}}}
-                    chart={`
-                        stateDiagram
-                        direction LR
-                        [*] --> NFT : mint
-                        state NFT {
-                          1NYX*
-                          STR/DEX/INT
-                          Traits
-                        }
-                        state GamePool {
-                          1_000_000_000NYX*
-                        }
-                        NFT --> Game : explore
-                        NFT --> GamePool : 0.1NYX*
-                        GamePool --> NFT : (0.15NYX*)
-                    `} />
-            </div>
-            <div className={styles.mono_section}>
+                <br/>
+                <div className={styles.mermaid_chart}>
+                    <Mermaid
+                        key={`whitepaper_hiw_2`}
+                        config={{mermaid: {theme: 'dark'}}}
+                        chart={`
+                            stateDiagram
+                            direction LR
+                            [*] --> NFT : mint
+                            state NFT {
+                              1NYX*
+                              STR/DEX/INT
+                              Traits
+                            }
+                            state GamePool {
+                              1_000_000_000NYX*
+                            }
+                            NFT --> Game : explore
+                            NFT --> GamePool : 0.1NYX*
+                            GamePool --> NFT : (0.15NYX*)
+                        `} />
+                </div>
+                <br/>
                 <p className={inter.className}>
                     In order to guarantee NYX liquidity every 24 hours from the minting date the player NFT will move
                     a small amount of NYX to the game pool, this action is call &quot;The Nyx tribute&quot;, in case of
                     not having NYX currency at that moment the player will be marked as &quot;exiled&quot; and it
                     won&apos;t be able to spend NYX anymore.
                 </p>
-            </div>
-            <div className={[styles.mono_section, styles.mermaid_chart].join(" ")}>
-                <Mermaid
-                    key={`whitepaper_hiw_3`}
-                    config={{mermaid: {theme: 'dark'}}}
-                    chart={`
-                        stateDiagram
-                        direction LR
-                        state NFT {
-                          1NYX*
-                        }
-                        state GamePool {
-                          1_000_000_000NYX*
-                        }
-                        NFT --> GamePool : 0.1NYX*
-                        Automation --> NFT : Nyx tribute
-                    `} />
-            </div>
-            <div className={styles.mono_section}>
+                <br/>
+                <div className={styles.mermaid_chart}>
+                    <Mermaid
+                        key={`whitepaper_hiw_3`}
+                        config={{mermaid: {theme: 'dark'}}}
+                        chart={`
+                            stateDiagram
+                            direction LR
+                            state NFT {
+                              1NYX*
+                            }
+                            state GamePool {
+                              1_000_000_000NYX*
+                            }
+                            NFT --> GamePool : 0.1NYX*
+                            Automation --> NFT : Nyx tribute
+                        `} />
+                </div>
+                <br/>
                 <p className={[styles.note, inter.className].join(" ")}>
                     (*) The NYX amounts used in this page are just examples, they may not be the real amounts.
                 </p>
@@ -111,37 +111,37 @@ const Whitepaper = () => {
                 <p className={[styles.subtitle, inter.className].join(" ")}>
                     3. Roadmap
                 </p>
-            </div>
-            <div className={[styles.mono_section, styles.mermaid_chart].join(" ")}>
-                <Mermaid
-                    key={`whitepaper_r_1`}
-                    config={{mermaid: {theme: 'dark'}}}
-                    chart={`
-                        timeline
-                            section Exploration
-                                Month 1: Gameplay
-                                        : Image Generation
-                                        : Social Media
-                            section Website
-                                Month 2   : Whitepaper
-                                        : Static Website
-                                        : Wallet Connect
-                            section Blockchain
-                                Month 3   : ERC20 and ERC721
-                                        : Proxy
-                                        : Smart Contract
-                                        : Chainlink Automation
-                            section DApp
-                                Month 4     : Game DApp
-                            section Soft Launch
-                                Month 5     : Promotion
-                                            : First mint
-                                            : Beta
-                            section Worldwide
-                                Month 6     : Promotion
-                                            : Mint
-                                            : Release
-                    `} />
+                <div className={styles.mermaid_chart}>
+                    <Mermaid
+                        key={`whitepaper_r_1`}
+                        config={{mermaid: {theme: 'dark'}}}
+                        chart={`
+                            timeline
+                                section Exploration
+                                    Month 1: Gameplay
+                                            : Image Generation
+                                            : Social Media
+                                section Website
+                                    Month 2   : Whitepaper
+                                            : Static Website
+                                            : Wallet Connect
+                                section Blockchain
+                                    Month 3   : ERC20 and ERC721
+                                            : Proxy
+                                            : Smart Contract
+                                            : Chainlink Automation
+                                section DApp
+                                    Month 4     : Game DApp
+                                section Soft Launch
+                                    Month 5     : Promotion
+                                                : First mint
+                                                : Beta
+                                section Worldwide
+                                    Month 6     : Promotion
+                                                : Mint
+                                                : Release
+                        `} />
+                </div>
             </div>
             <div className={styles.mono_section}>
                 <p className={[styles.subtitle, inter.className].join(" ")}>
