@@ -4,20 +4,20 @@ import { BigNumber } from "ethers";
 async function main() {
 
     async function displayCharacter(id: BigNumber) {
-        const sheet = await heroesOfNyxeum._characters(id);
+        const nftMetadata = await heroesOfNyxeum.getNftMetadata(id);
         console.log(`Character Sheet #${id}:`);
-        console.log(`* Image URL: ${sheet.imageUrl}`);
+        console.log(`* Image URL: ${nftMetadata.imageUrl}`);
         console.log(`* Main Attributes:`);
-        console.log(`- Strength: ${sheet.strength}`);
-        console.log(`- Dexterity: ${sheet.dexterity}`);
-        console.log(`- Intelligence: ${sheet.intelligence}`);
+        console.log(`- Strength: ${nftMetadata.strength}`);
+        console.log(`- Dexterity: ${nftMetadata.dexterity}`);
+        console.log(`- Intelligence: ${nftMetadata.intelligence}`);
         console.log(`* Traits:`);
-        console.log(`- Tough: ${sheet.tough}`);
-        console.log(`- Powerful: ${sheet.powerful}`);
-        console.log(`- Precise: ${sheet.precise}`);
-        console.log(`- Skilled: ${sheet.skilled}`);
-        console.log(`- Sharp: ${sheet.sharp}`);
-        console.log(`- Oracle: ${sheet.oracle}`);
+        console.log(`- Tough: ${nftMetadata.tough}`);
+        console.log(`- Powerful: ${nftMetadata.powerful}`);
+        console.log(`- Precise: ${nftMetadata.precise}`);
+        console.log(`- Skilled: ${nftMetadata.skilled}`);
+        console.log(`- Sharp: ${nftMetadata.sharp}`);
+        console.log(`- Oracle: ${nftMetadata.oracle}`);
 
     }
 

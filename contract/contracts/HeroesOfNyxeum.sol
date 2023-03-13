@@ -12,7 +12,14 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
 
     Counters.Counter private _tokenIdCounter;
 
-    struct Sheet {
+    // Commit and Reveal logic is required for minting
+    uint256 private _commitPrice = 10^15;
+    uint256 private _revealPrice = 0;
+    uint256 private _delayInBlocks = 1;
+    mapping(address => uint256) private _commits;
+
+    // NFT Metadata is stored within the collection
+    struct NftMetadata {
         string imageUrl;
         uint8 strength;
         uint8 dexterity;
@@ -24,45 +31,71 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
         uint8 sharp;
         uint8 oracle;
     }
-    mapping(uint256 => Sheet) public _characters;
+    mapping(uint256 => NftMetadata) private _nftMetadata;
 
-    address public _gameAddress;
-
+    // Constructor
     constructor() ERC721("Heroes of Nyxeum", "HNYX") {
     }
 
+    // NFT pure data functions
     function _baseURI() internal pure override returns (string memory) {
         return "https://nyxeum.vercel.app/api/nft/";
     }
 
-    function safeMint(
-        address to,
-        uint8 strength,
-        uint8 dexterity,
-        uint8 intelligence,
-        uint8 tough,
-        uint8 powerful,
-        uint8 precise,
-        uint8 skilled,
-        uint8 sharp,
-        uint8 oracle) public onlyOwnerOrGame {
+    function _externalURI() internal pure returns (string memory) {
+        return "https://nyxeum.vercel.app/nft/";
+    }
 
-        require(strength >= 0 && strength < 100, "Invalid value for strength");
-        require(dexterity >= 0 && dexterity < 100, "Invalid value for dexterity");
-        require(intelligence >= 0 && intelligence < 100, "Invalid value for intelligence");
-        require(tough >= 0 && tough < 28, "Invalid value for tough");
-        require(powerful >= 0 && powerful < 28, "Invalid value for powerful");
-        require(precise >= 0 && precise < 28, "Invalid value for precise");
-        require(skilled >= 0 && skilled < 28, "Invalid value for skilled");
-        require(sharp >= 0 && sharp < 28, "Invalid value for sharp");
-        require(oracle >= 0 && oracle < 28, "Invalid value for oracle");
+    function _imageExtension() internal pure returns (string memory) {
+        return ".png";
+    }
+
+    // Getters
+    function getCommitPrice() public view returns (uint256) {
+        return _commitPrice;
+    }
+
+    function getRevealPrice() public view returns (uint256) {
+        return _revealPrice;
+    }
+
+    function getNftMetadata(uint256 index) public view returns (NftMetadata memory) {
+        return _nftMetadata[index];
+    }
+
+    // Commit
+    function commit() public payable {
+        require(msg.value == _commitPrice, "Incorrect character commit price");
+        require(_commits[msg.sender] == 0, "You have already a character requested!");
+
+        _commits[msg.sender] = block.number;
+    }
+
+    // Reveal
+    function reveal() public {
+        require(_commits[msg.sender] != 0, "You need to request a character first!");
+        require(_commits[msg.sender] + _delayInBlocks >= block.number, "You need to wait a bit before revealing your character");
+
+        uint256 roll = uint256(blockhash(_commits[msg.sender]));
+        delete _commits[msg.sender];
 
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
-        string memory imageUrl = string(abi.encodePacked(string(abi.encodePacked("https://nyxeum.vercel.app/nft/", Strings.toString(tokenId))), ".png"));
-        _characters[tokenId] = Sheet(imageUrl, strength, dexterity, intelligence, tough, powerful, precise, skilled, sharp, oracle);
 
-        _safeMint(to, tokenId);
+        _nftMetadata[tokenId] =
+            NftMetadata(
+                string(abi.encodePacked(string(abi.encodePacked(_externalURI(), Strings.toString(tokenId))), _imageExtension())),
+                uint8(roll % 100),
+                uint8((roll >> 7) % 100),
+                uint8((roll >> 14) % 100),
+                uint8((roll >> 19) % 28),
+                uint8((roll >> 24) % 28),
+                uint8((roll >> 29) % 28),
+                uint8((roll >> 34) % 28),
+                uint8((roll >> 39) % 28),
+                uint8((roll >> 44) % 28));
+
+        _safeMint(msg.sender, tokenId);
     }
 
     // The following functions are overrides required by Solidity.
@@ -81,14 +114,5 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
     returns (bool)
     {
         return super.supportsInterface(interfaceId);
-    }
-
-    function setGameAddress(address gameAddress) public onlyOwner {
-        _gameAddress = gameAddress;
-    }
-
-    modifier onlyOwnerOrGame {
-        require(owner() == _msgSender() || _gameAddress == _msgSender(), "Caller is neither the owner nor the game.");
-        _;
     }
 }
