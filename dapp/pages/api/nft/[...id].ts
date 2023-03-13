@@ -8,7 +8,7 @@ export default async function metadata(req: NextApiRequest, res: NextApiResponse
         if (score < 18) {
             return undefined;
         } else if (score < 25) {
-            return { trait, value: "Super" };
+            return { trait, value: "Notably" };
         } else if (score < 27) {
             return { trait, value: "Extremely" };
         } else {
@@ -20,7 +20,7 @@ export default async function metadata(req: NextApiRequest, res: NextApiResponse
     const heroesOfNyxeum = await HeroesOfNyxeum.attach("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");
 
     const id = BigNumber.from((req.query.id || ['0'])[0]);
-    const sheet = await heroesOfNyxeum._characters(id);
+    const nftMetadata = await heroesOfNyxeum.getNftMetadata(id);
 
     const attributes : Array<any> = [
 
@@ -28,53 +28,53 @@ export default async function metadata(req: NextApiRequest, res: NextApiResponse
         {
             "display_type": "number",
             "trait_type": "Strength",
-            "value": parseInt(`${sheet.strength}`)
+            "value": parseInt(`${nftMetadata.strength}`)
         },
         {
             "display_type": "number",
             "trait_type": "Dexterity",
-            "value": parseInt(`${sheet.dexterity}`)
+            "value": parseInt(`${nftMetadata.dexterity}`)
         },
         {
             "display_type": "number",
             "trait_type": "Intelligence",
-            "value": parseInt(`${sheet.intelligence}`)
+            "value": parseInt(`${nftMetadata.intelligence}`)
         },
 
         // TRAITS
         {
             "trait_type": "Tough Score",
-            "value": parseInt(`${sheet.tough}`)
+            "value": parseInt(`${nftMetadata.tough}`)
         },
         {
             "trait_type": "Powerful Score",
-            "value": parseInt(`${sheet.powerful}`)
+            "value": parseInt(`${nftMetadata.powerful}`)
         },
         {
             "trait_type": "Precise Score",
-            "value": parseInt(`${sheet.precise}`)
+            "value": parseInt(`${nftMetadata.precise}`)
         },
         {
             "trait_type": "Skilled Score",
-            "value": parseInt(`${sheet.skilled}`)
+            "value": parseInt(`${nftMetadata.skilled}`)
         },
         {
             "trait_type": "Sharp Score",
-            "value": parseInt(`${sheet.sharp}`)
+            "value": parseInt(`${nftMetadata.sharp}`)
         },
         {
             "trait_type": "Oracle Score",
-            "value": parseInt(`${sheet.oracle}`)
+            "value": parseInt(`${nftMetadata.oracle}`)
         },
     ];
 
     // PROPERTIES
-    [getLevel("Tough", sheet.tough),
-        getLevel("Powerful", sheet.powerful),
-        getLevel("Precise", sheet.precise),
-        getLevel("Skilled", sheet.skilled),
-        getLevel("Sharp", sheet.sharp),
-        getLevel("Oracle", sheet.oracle)]
+    [getLevel("Tough", nftMetadata.tough),
+        getLevel("Powerful", nftMetadata.powerful),
+        getLevel("Precise", nftMetadata.precise),
+        getLevel("Skilled", nftMetadata.skilled),
+        getLevel("Sharp", nftMetadata.sharp),
+        getLevel("Oracle", nftMetadata.oracle)]
         .filter(prop => prop !== undefined)
         .map(prop => {return {
             "trait_type": prop?.trait,
@@ -85,7 +85,7 @@ export default async function metadata(req: NextApiRequest, res: NextApiResponse
     res.status(200).json({
         "description": "Heroes of Nyxeum",
         "external_url": `https://nyxeum.vercel.app`,
-        "image": `${sheet.imageUrl}`,
+        "image": `${nftMetadata.imageUrl}`,
         "name": `Hero #${id}`,
         "attributes": attributes
     });
