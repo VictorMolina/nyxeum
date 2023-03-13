@@ -7,13 +7,18 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
+import "./NyxEssence.sol";
+
 contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
 
+    // Nyx Essence
+    NyxEssence private _nyxEssence;
+
     // Commit and Reveal logic is required for minting
-    uint256 private _commitPrice = 10^15;
+    uint256 private _commitPrice = 5 * (10**18);
     uint256 private _revealPrice = 0;
     uint256 private _delayInBlocks = 1;
     mapping(address => uint256) private _commits;
@@ -34,7 +39,8 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
     mapping(uint256 => NftMetadata) private _nftMetadata;
 
     // Constructor
-    constructor() ERC721("Heroes of Nyxeum", "HNYX") {
+    constructor(address nyxEssenceAddress) ERC721("Heroes of Nyxeum", "HNYX") {
+        _nyxEssence = NyxEssence(nyxEssenceAddress);
     }
 
     // NFT pure data functions
@@ -65,9 +71,10 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
 
     // Commit
     function commit() public payable {
-        require(msg.value == _commitPrice, "Incorrect character commit price");
+        require(_nyxEssence.allowance(msg.sender, address(this)) >= _commitPrice, "Check NYX allowance");
         require(_commits[msg.sender] == 0, "You have already a character requested!");
 
+        _nyxEssence.transferFrom(msg.sender, address(this), _commitPrice);
         _commits[msg.sender] = block.number;
     }
 

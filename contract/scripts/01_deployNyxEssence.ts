@@ -25,6 +25,12 @@ async function main() {
   console.log(
       `Signer address ${signer.address} contains ${await toNyxCurrency(signerBalance)} NYX`
   );
+
+  const tokenBalance = await nyxEssence.balanceOf(nyxEssence.address);
+
+  console.log(
+      `Token address ${nyxEssence.address} contains ${await toNyxCurrency(tokenBalance)} NYX`
+  );
 }
 
 // We recommend this pattern to be able to use async/await everywhere

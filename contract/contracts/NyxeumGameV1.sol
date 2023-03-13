@@ -2,20 +2,22 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
+import "./NyxEssence.sol";
 import "./HeroesOfNyxeum.sol";
 
 contract NyxeumGameV1 is Initializable {
 
-    address public _owner;
-    address public _nyxEssence;
-    address public _heroesOfNyxeum;
+    address private _owner;
+    NyxEssence private _nyxEssence;
+    HeroesOfNyxeum private _heroesOfNyxeum;
 
     function initialize(
-        address nyxEssence,
-        address heroesOfNyxeum) public initializer {
+        address nyxEssenceAddress,
+        address heroesOfNyxeumAddress) public initializer {
         _owner = msg.sender;
-        _nyxEssence = nyxEssence;
-        _heroesOfNyxeum = heroesOfNyxeum;
+        _nyxEssence = NyxEssence(nyxEssenceAddress);
+        _heroesOfNyxeum = HeroesOfNyxeum(heroesOfNyxeumAddress);
     }
 
     function withdrawProfits() public onlyOwner {
