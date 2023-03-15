@@ -9,6 +9,7 @@ import {
 } from '@rainbow-me/rainbowkit';
 
 import { WagmiConfig, createClient, configureChains, goerli } from 'wagmi'
+import { localhost } from "@wagmi/chains";
 
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from 'wagmi/providers/public'
@@ -20,7 +21,7 @@ import {
 import { SessionProvider } from 'next-auth/react';
 
 const { chains, provider } = configureChains(
-    [goerli],
+    [goerli, localhost],
     [alchemyProvider({ apiKey: 'dixigcmCcF0sH6Tzan41Q7Gp5IUgyMOh' }), publicProvider()],
 )
 
