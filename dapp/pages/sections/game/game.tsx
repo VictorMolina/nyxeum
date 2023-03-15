@@ -10,7 +10,7 @@ const Game = () => {
             <h1 className={[styles.title, inter.className].join(" ")}>The Nyx Tribute</h1>
             <div className={styles.section}>
                 <div className={["grid-element", styles.section_image].join(" ")}>
-                    <Image src="/images/nyxeum.png" alt="Nyxeum" width="256" height="256" />
+                    <Image src="/images/nyxeum.png" alt="Nyxeum" width="256" height="256" priority={true} />
                 </div>
                 <div>
                     <p className={inter.className}>
