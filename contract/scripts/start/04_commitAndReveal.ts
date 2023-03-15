@@ -14,13 +14,13 @@ async function main() {
     const commitPrice = await heroesOfNyxeum.getCommitPrice();
     console.log(`Commit price: ${commitPrice}`)
 
+    await nyxEssence.connect(acc1).approve(heroesOfNyxeum.address, BigNumber.from(2).pow(256).sub(1));
+    console.log(`NYX approved: ${await nyxEssence.allowance(acc1.address, heroesOfNyxeum.address)}`);
+
     await nyxEssence.connect(acc1).buy({ value: BigNumber.from(10).pow(18)});
     console.log(`NYX bought: ${await nyxEssence.balanceOf(acc1.address)}`);
 
     for (let i = 0; i < 8; i++) {
-        await nyxEssence.connect(acc1).approve(heroesOfNyxeum.address, commitPrice);
-        console.log(`NYX approved: ${await nyxEssence.allowance(acc1.address, heroesOfNyxeum.address)}`);
-
         await heroesOfNyxeum.connect(acc1).commit();
         console.log(`Committed`)
 

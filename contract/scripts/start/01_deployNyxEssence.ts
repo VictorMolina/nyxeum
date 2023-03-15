@@ -8,8 +8,6 @@ async function main() {
     return amount.div(BigNumber.from(10).pow(decimals))
   }
 
-  const [signer] = await ethers.getSigners();
-
   const NyxEssence = await ethers.getContractFactory("NyxEssence");
   const nyxEssence = await NyxEssence.deploy();
   await nyxEssence.deployed();
@@ -18,12 +16,6 @@ async function main() {
 
   console.log(
     `NyxEssence with total supply of ${await toNyxCurrency(totalSupply)} NYX deployed to ${nyxEssence.address}`
-  );
-
-  const signerBalance = await nyxEssence.balanceOf(signer.address);
-
-  console.log(
-      `Signer address ${signer.address} contains ${await toNyxCurrency(signerBalance)} NYX`
   );
 
   const tokenBalance = await nyxEssence.balanceOf(nyxEssence.address);

@@ -1,8 +1,10 @@
 import { ethers } from "hardhat";
 
 async function main() {
+  const NyxEssenceAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+
   const HeroesOfNyxeum = await ethers.getContractFactory("HeroesOfNyxeum");
-  const heroesOfNyxeum = await HeroesOfNyxeum.deploy("0x5FbDB2315678afecb367f032d93F642f64180aa3");
+  const heroesOfNyxeum = await HeroesOfNyxeum.deploy(NyxEssenceAddress);
   await heroesOfNyxeum.deployed();
 
   console.log(
