@@ -1,7 +1,7 @@
-import Tech from "@/pages/sections/tech";
-import Game from "@/pages/sections/game";
-import Whitepaper from "@/pages/sections/whitepaper";
-import Play from "@/pages/sections/play";
+import Tech from "@/pages/sections/tech/tech";
+import Game from "@/pages/sections/game/game";
+import Whitepaper from "@/pages/sections/whitepaper/whitepaper";
+import Play from "@/pages/sections/play/play";
 
 export enum SectionCodes { GAME, TECH, WHITEPAPER, PLAY }
 
