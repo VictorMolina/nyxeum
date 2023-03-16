@@ -65,6 +65,10 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
         return _revealPrice;
     }
 
+    function canReveal() public view returns (bool) {
+        return _commits[msg.sender] > 0;
+    }
+
     function getNftMetadata(uint256 index) public view returns (NftMetadata memory) {
         return _nftMetadata[index];
     }
