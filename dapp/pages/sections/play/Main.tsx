@@ -1,25 +1,30 @@
 import { useEffect, useState } from "react";
-import { useContract, useSigner } from 'wagmi';
+import { utils } from "ethers";
 import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
 
-const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-// Move to final folder
-const ensRegistryABI = require('../../../abis/HeroesOfNyxeum.json').abi;
+const Main = ({ nyxEssence, heroesOfNyxeum, refreshScene }: Props) => {
 
-const Main = () => {
-
+    const [ownedNyx, setOwnedNyx] = useState(0);
     const [tokens, setTokens] = useState<Array<IdentifiableHero>>([]);
-
-    const { data: signer } = useSigner();
-
-    const heroesOfNyxeum = useContract({
-        address: contractAddress,
-        abi: ensRegistryABI,
-        signerOrProvider: signer,
-    });
+    const [canReveal, setCanReveal] = useState(false);
 
     useEffect(() => {
+        const loadOwnedNyx = async () => {
+            if (!nyxEssence?.signer) {
+                return;
+            }
+            const address = await nyxEssence.signer.getAddress();
+            const tokenBalance = await nyxEssence?.balanceOf(address);
+            setOwnedNyx(tokenBalance);
+        }
+        const loadCanReveal = async () => {
+            if (!heroesOfNyxeum?.signer) {
+                return;
+            }
+            const result = await heroesOfNyxeum?.canReveal();
+            setCanReveal(result);
+        }
         const refreshTokens = async () => {
             if (!heroesOfNyxeum?.signer) {
                 return;
@@ -34,30 +39,64 @@ const Main = () => {
             }
             setTokens(result);
         }
-        refreshTokens()
-            .catch(console.error);
-    }, [heroesOfNyxeum])
+        loadOwnedNyx().catch(console.error);
+        loadCanReveal().catch(console.error);
+        refreshTokens().catch(console.error);
+    }, [heroesOfNyxeum]);
+
+    const mintAHero = async () => {
+        if (!heroesOfNyxeum?.signer) {
+            return;
+        }
+        await heroesOfNyxeum?.commit();
+        refreshScene();
+    };
+
+    const revealAHero = async () => {
+        if (!heroesOfNyxeum?.signer) {
+            return;
+        }
+        await heroesOfNyxeum?.reveal();
+        refreshScene();
+    };
 
     return (
-        <div className={styles.grid}>
-            {
-                tokens.map((hero, i) => {
-                    const name = `Hero Of Nyxeum #${hero.tokenId}`;
-                    return <div key={hero.tokenId}>
-                        <div>{name}</div>
-                        <br/>
-                        <Image src={hero.imageUrl} alt={name} width={256} height={256} />
-                        <div>STR: {hero.strength}</div>
-                        <div>DEX: {hero.dexterity}</div>
-                        <div>INT: {hero.intelligence}</div>
-                        <button className={styles.button}>Explore</button>
-                        <button className={styles.button}>Attack</button>
-                    </div>
-                })
-            }
-        </div>
+        <>
+            <div className={styles.grid}>
+                <div>
+                    <div>{`Owned NYX: ${utils.formatEther(ownedNyx)}`}</div>
+                    {
+                        canReveal ? (<button className={styles.button} onClick={revealAHero}>Reveal your Hero!</button>) :
+                            (<button className={styles.button} onClick={mintAHero}>Mint a Hero for 5 NYX</button>)
+                    }
+                </div>
+            </div>
+            <div className={styles.grid}>
+                {
+                    tokens.map((hero, i) => {
+                        const name = `Hero Of Nyxeum #${hero.tokenId}`;
+                        return <div key={hero.tokenId}>
+                            <div>{name}</div>
+                            <br/>
+                            <Image src={hero.imageUrl} alt={name} width={256} height={256} />
+                            <div>STR: {hero.strength}</div>
+                            <div>DEX: {hero.dexterity}</div>
+                            <div>INT: {hero.intelligence}</div>
+                            <button className={styles.button}>Explore</button>
+                            <button className={styles.button}>Attack</button>
+                        </div>
+                    })
+                }
+            </div>
+        </>
     )
 };
+
+interface Props {
+    nyxEssence: any;
+    heroesOfNyxeum: any;
+    refreshScene: any;
+}
 
 interface Hero {
     imageUrl: string;

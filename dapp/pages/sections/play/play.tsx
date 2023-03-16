@@ -50,7 +50,7 @@ const Play = () => {
         case "ACCEPT_TERMS":
             return <AcceptTerms nyxEssence={nyxEssence} heroesOfNyxeum={heroesOfNyxeum} refreshScene={() => setScene("")} />
         case "MAIN":
-            return <Main/>
+            return <Main nyxEssence={nyxEssence} heroesOfNyxeum={heroesOfNyxeum} refreshScene={() => setScene("")} />
         default:
             setScene("ACCEPT_TERMS");
             return null;
