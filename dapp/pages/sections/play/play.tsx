@@ -6,8 +6,8 @@ import AcceptTerms from "@/pages/sections/play/AcceptTerms";
 import Main from "@/pages/sections/play/Main";
 
 // Move to final folder
-const nyxEssenceABI = require("../../../../contract/artifacts/contracts/NyxEssence.sol/NyxEssence.json").abi;
-const heroesOfNyxeumABI = require("../../../../contract/artifacts/contracts/HeroesOfNyxeum.sol/HeroesOfNyxeum.json").abi;
+const nyxEssenceABI = require("../../../abis/NyxEssence.json").abi;
+const heroesOfNyxeumABI = require("../../../abis/HeroesOfNyxeum.json").abi;
 
 const nyxEssenceAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const heroesOfNyxeumAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
