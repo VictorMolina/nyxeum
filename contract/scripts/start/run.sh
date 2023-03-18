@@ -4,3 +4,4 @@ npx hardhat run $NYXEUM_HOME/contract/scripts/start/02_deployHeroesOfNyxeum.ts -
 npx hardhat run $NYXEUM_HOME/contract/scripts/start/03_deployNyxeumGameV1.ts --network localhost
 npx hardhat run $NYXEUM_HOME/contract/scripts/start/04_commitAndReveal.ts --network localhost
 npx hardhat run $NYXEUM_HOME/contract/scripts/start/05_exploreNFTs.ts --network localhost
+npx hardhat run $NYXEUM_HOME/contract/scripts/start/06_sendEth.ts --network localhost
