@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { utils } from "ethers";
+import { BigNumber, utils } from "ethers";
 import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
 
@@ -44,6 +44,14 @@ const Main = ({ nyxEssence, heroesOfNyxeum, refreshScene }: Props) => {
         refreshTokens().catch(console.error);
     }, [heroesOfNyxeum]);
 
+    const buyNyx = async (value: BigNumber) => {
+        if (!nyxEssence?.signer) {
+            return;
+        }
+        await nyxEssence?.buy({ value });
+        refreshScene();
+    };
+
     const mintAHero = async () => {
         if (!heroesOfNyxeum?.signer) {
             return;
@@ -65,6 +73,7 @@ const Main = ({ nyxEssence, heroesOfNyxeum, refreshScene }: Props) => {
             <div className={styles.grid}>
                 <div>
                     <div>{`Owned NYX: ${utils.formatEther(ownedNyx)}`}</div>
+                    <button className={styles.button} onClick={() => buyNyx(BigNumber.from(10).pow(16))}>Buy 10 NYX for 0.01 ETH</button>
                     {
                         canReveal ? (<button className={styles.button} onClick={revealAHero}>Reveal your Hero!</button>) :
                             (<button className={styles.button} onClick={mintAHero}>Mint a Hero for 5 NYX</button>)
