@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 import "./NyxEssence.sol";
 
+import "hardhat/console.sol";
+
 contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
 
@@ -76,7 +78,7 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
     // Reveal
     function reveal() public {
         require(_commits[msg.sender] != 0, "You need to request a character first!");
-        require(_commits[msg.sender] + _delayInBlocks >= block.number, "You need to wait a bit before revealing your character");
+        require(block.number >= _commits[msg.sender] + _delayInBlocks, "You need to wait a bit before revealing your character");
 
         uint256 roll = uint256(blockhash(_commits[msg.sender]));
         delete _commits[msg.sender];
