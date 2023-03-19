@@ -85,7 +85,7 @@ export default async function metadata(req: NextApiRequest, res: NextApiResponse
     res.status(200).json({
         "description": "Heroes of Nyxeum",
         "external_url": `https://nyxeum.vercel.app`,
-        "image": `${nftMetadata.imageUrl}`,
+        "image": `https://nyxeum.vercel.app/nft/${id}.png`,
         "name": `Hero #${id}`,
         "attributes": attributes
     });
