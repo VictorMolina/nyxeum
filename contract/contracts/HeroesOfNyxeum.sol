@@ -25,7 +25,6 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
 
     // NFT Metadata is stored within the collection
     struct NftMetadata {
-        string imageUrl;
         uint8 strength;
         uint8 dexterity;
         uint8 intelligence;
@@ -46,14 +45,6 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
     // NFT pure data functions
     function _baseURI() internal pure override returns (string memory) {
         return "https://nyxeum.vercel.app/api/nft/";
-    }
-
-    function _externalURI() internal pure returns (string memory) {
-        return "https://nyxeum.vercel.app/nft/";
-    }
-
-    function _imageExtension() internal pure returns (string memory) {
-        return ".png";
     }
 
     // Getters
@@ -95,7 +86,6 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
 
         _nftMetadata[tokenId] =
             NftMetadata(
-                string(abi.encodePacked(string(abi.encodePacked(_externalURI(), Strings.toString(tokenId))), _imageExtension())),
                 uint8(roll % 100),
                 uint8((roll >> 7) % 100),
                 uint8((roll >> 14) % 100),
