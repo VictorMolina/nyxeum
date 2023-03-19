@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import { useContract, useSigner } from 'wagmi';
 
 import AcceptTerms from "@/pages/sections/play/AcceptTerms";
 import Main from "@/pages/sections/play/Main";
+
+import { useAllowanceReader } from '@/components/utils/NyxEssenceHooks';
 
 // Move to final folder
 const nyxEssenceABI = require("../../../abis/NyxEssence.json").abi;
@@ -14,9 +15,6 @@ const heroesOfNyxeumAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 const MIN_ALLOWANCE = BigNumber.from(2).pow(255);
 
 const Play = () => {
-
-    const [scene, setScene] = useState("ACCEPT_TERMS");
-
     const { data: signer } = useSigner();
 
     const nyxEssence = useContract({
@@ -31,30 +29,14 @@ const Play = () => {
         signerOrProvider: signer,
     });
 
-    useEffect(() => {
-        const hasAcceptedTerms = async () => {
-            if (!nyxEssence?.signer) {
-                return false;
-            }
-            const address = await nyxEssence?.signer.getAddress();
-            const allowance = await nyxEssence?.allowance(address, heroesOfNyxeumAddress);
+    const allowance = useAllowanceReader();
 
-            return MIN_ALLOWANCE.lt(allowance);
-        }
-        hasAcceptedTerms()
-            .then(accepted => setScene(accepted? "MAIN" : "ACCEPT_TERMS"))
-            .catch(console.error);
-    }, [nyxEssence, scene]);
-
-    switch (scene) {
-        case "ACCEPT_TERMS":
-            return <AcceptTerms nyxEssence={nyxEssence} heroesOfNyxeum={heroesOfNyxeum} refreshScene={() => setScene("")} />
-        case "MAIN":
-            return <Main nyxEssence={nyxEssence} heroesOfNyxeum={heroesOfNyxeum} refreshScene={() => setScene("")} />
-        default:
-            setScene("ACCEPT_TERMS");
-            return null;
-    }
+    return MIN_ALLOWANCE.lt(allowance || 0) ?
+        (
+            <Main nyxEssence={nyxEssence} heroesOfNyxeum={heroesOfNyxeum} />
+        ) : (
+            <AcceptTerms nyxEssence={nyxEssence} heroesOfNyxeum={heroesOfNyxeum} />
+        );
 };
 
 export default Play;

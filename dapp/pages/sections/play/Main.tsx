@@ -1,30 +1,23 @@
 import { useEffect, useState } from "react";
 import { BigNumber, utils } from "ethers";
+import { useWaitForTransaction } from 'wagmi'
+
+import { useBalanceReader } from '@/components/utils/NyxEssenceHooks';
+import { useCanRevealReader, useReveal } from "@/components/utils/HeroesOfNyxeumHooks";
+
 import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
 
-const Main = ({ nyxEssence, heroesOfNyxeum, refreshScene }: Props) => {
+const Main = ({ nyxEssence, heroesOfNyxeum }: Props) => {
 
-    const [ownedNyx, setOwnedNyx] = useState(0);
     const [tokens, setTokens] = useState<Array<IdentifiableHero>>([]);
-    const [canReveal, setCanReveal] = useState(false);
+    const [transaction, setTransaction] = useState<`0x${string}` | undefined>();
+
+    const balance = useBalanceReader();
+    const canReveal = useCanRevealReader();
+    const reveal = useReveal();
 
     useEffect(() => {
-        const loadOwnedNyx = async () => {
-            if (!nyxEssence?.signer) {
-                return;
-            }
-            const address = await nyxEssence.signer.getAddress();
-            const tokenBalance = await nyxEssence?.balanceOf(address);
-            setOwnedNyx(tokenBalance);
-        }
-        const loadCanReveal = async () => {
-            if (!heroesOfNyxeum?.signer) {
-                return;
-            }
-            const result = await heroesOfNyxeum?.canReveal();
-            setCanReveal(result);
-        }
         const refreshTokens = async () => {
             if (!heroesOfNyxeum?.signer) {
                 return;
@@ -34,48 +27,61 @@ const Main = ({ nyxEssence, heroesOfNyxeum, refreshScene }: Props) => {
             const tokenBalance = await heroesOfNyxeum?.balanceOf(address);
             for (let i = 0; i < tokenBalance; i++) {
                 const tokenId = await heroesOfNyxeum?.tokenOfOwnerByIndex(address, i);
-                const metadata = await heroesOfNyxeum?.getNftMetadata(tokenId);
+                const metadata = await heroesOfNyxeum?.getNftMetadata(BigNumber.from(tokenId));
                 result.push({tokenId, ...metadata});
             }
             setTokens(result);
         }
-        loadOwnedNyx().catch(console.error);
-        loadCanReveal().catch(console.error);
         refreshTokens().catch(console.error);
-    }, [heroesOfNyxeum]);
+    }, [heroesOfNyxeum, nyxEssence]);
 
     const buyNyx = async (value: BigNumber) => {
         if (!nyxEssence?.signer) {
             return;
         }
-        await nyxEssence?.buy({ value });
-        refreshScene();
+        const tx = await nyxEssence?.buy({ value });
+        setTransaction(tx.hash);
     };
 
     const mintAHero = async () => {
         if (!heroesOfNyxeum?.signer) {
             return;
         }
-        await heroesOfNyxeum?.commit();
-        refreshScene();
+        const tx = await heroesOfNyxeum?.commit();
+        setTransaction(tx.hash);
     };
 
-    const revealAHero = async () => {
-        if (!heroesOfNyxeum?.signer) {
+    const { data, isError, isLoading } = useWaitForTransaction({
+        hash: transaction,
+    })
+
+    useEffect(() => {
+        return;
+        if (!transaction) {
             return;
         }
-        await heroesOfNyxeum?.reveal();
-        refreshScene();
-    };
+        console.log(`Transaction: ${JSON.stringify(transaction)}`);
+        if (isLoading) {
+            console.log(`Waiting for transaction ${transaction}`);
+        }
+        if (isError) {
+            console.error(`Error in transaction ${transaction}: ${data}`);
+            setTransaction(undefined);
+        }
+        if (data) {
+            console.log(`Transaction ${transaction} finished! ${JSON.stringify(data)}`);
+            setTransaction(undefined);
+        }
+    }, [transaction, data, isError, isLoading]);
 
     return (
         <>
             <div className={styles.grid}>
                 <div>
-                    <div>{`Owned NYX: ${utils.formatEther(ownedNyx)}`}</div>
+                    <div>{`Owned NYX: ${utils.formatEther(balance || 0)}`}</div>
                     <button className={styles.button} onClick={() => buyNyx(BigNumber.from(10).pow(16))}>Buy 10 NYX for 0.01 ETH</button>
                     {
-                        canReveal ? (<button className={styles.button} onClick={revealAHero}>Reveal your Hero!</button>) :
+                        canReveal ? (<button className={styles.button} onClick={() => reveal?.write && reveal?.write()}>Reveal your Hero!</button>) :
                             (<button className={styles.button} onClick={mintAHero}>Mint a Hero for 5 NYX</button>)
                     }
                 </div>
@@ -87,7 +93,7 @@ const Main = ({ nyxEssence, heroesOfNyxeum, refreshScene }: Props) => {
                         return <div key={hero.tokenId}>
                             <div>{name}</div>
                             <br/>
-                            <Image src={hero.imageUrl} alt={name} width={256} height={256} />
+                            <Image src={`/nft/${hero.tokenId}.png`} alt={name} width={256} height={256} />
                             <div>STR: {hero.strength}</div>
                             <div>DEX: {hero.dexterity}</div>
                             <div>INT: {hero.intelligence}</div>
@@ -104,7 +110,6 @@ const Main = ({ nyxEssence, heroesOfNyxeum, refreshScene }: Props) => {
 interface Props {
     nyxEssence: any;
     heroesOfNyxeum: any;
-    refreshScene: any;
 }
 
 interface Hero {

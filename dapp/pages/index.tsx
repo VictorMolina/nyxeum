@@ -52,7 +52,7 @@ export default function AuthenticatedPage({ address }: AuthenticatedPageProps) {
             Nyxeum / Genesis / v1.0.0
           </p>
           <div>&nbsp;</div>
-          <ConnectButton showBalance={false} />
+          <ConnectButton showBalance={true} />
         </div>
 
         <SectionWrapper sectionCode={sectionCode} />
