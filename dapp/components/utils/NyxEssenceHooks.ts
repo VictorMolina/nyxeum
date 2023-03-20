@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { BigNumber } from "ethers";
-import { useAccount, useContractRead } from "wagmi";
+import {useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction} from "wagmi";
+import { ContractWriteResult } from "@/components/utils/types";
 
 import { address as heroesOfNyxeumAddress } from '@/components/utils/HeroesOfNyxeumHooks';
 
 export const address: `0x${string}` = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 export const abi = require("../../abis/NyxEssence.json").abi;
 
-export function useBalanceReader(): BigNumber | undefined {
+export function useBalanceOfReader(): BigNumber {
     const [balance, setBalance] = useState(BigNumber.from(0));
     const account = useAccount();
 
@@ -29,7 +30,6 @@ export function useBalanceReader(): BigNumber | undefined {
     return balance;
 }
 
-
 export function useAllowanceReader(): BigNumber | undefined {
     const [allowance, setAllowance] = useState(BigNumber.from(0));
     const account = useAccount();
@@ -50,4 +50,51 @@ export function useAllowanceReader(): BigNumber | undefined {
     }, [allowance, read]);
 
     return allowance;
+}
+
+export function useAcceptTerms(): ContractWriteResult {
+    const account = useAccount();
+
+    const { config } = usePrepareContractWrite({
+        address: address,
+        abi: abi,
+        functionName: 'approve',
+        args: [heroesOfNyxeumAddress, BigNumber.from(2).pow(256).sub(1)],
+        overrides: {
+            from: account.address,
+        },
+    });
+
+    const { data, isLoading: isPrepared, isSuccess: isStarted, isError, write } = useContractWrite(config)
+    const { isSuccess } = useWaitForTransaction({
+        hash: data?.hash,
+    });
+
+    const isLoading = !isSuccess && (isPrepared || isStarted)
+
+    return { data, isLoading, isSuccess, isError, write };
+}
+
+export function useBuy(value: BigNumber): ContractWriteResult {
+    const account = useAccount();
+
+    const { config } = usePrepareContractWrite({
+        address: address,
+        abi: abi,
+        functionName: 'buy',
+        args: [],
+        overrides: {
+            from: account.address,
+            value: value,
+        },
+    });
+
+    const { data, isLoading: isPrepared, isSuccess: isStarted, isError, write } = useContractWrite(config)
+    const { isSuccess } = useWaitForTransaction({
+        hash: data?.hash,
+    });
+
+    const isLoading = !isSuccess && (isPrepared || isStarted)
+
+    return { data, isLoading, isSuccess, isError, write };
 }

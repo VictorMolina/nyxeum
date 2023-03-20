@@ -1,25 +1,15 @@
-import { BigNumber } from "ethers";
 import React from "react";
 
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import Image from "next/image";
+import { useAcceptTerms } from "@/components/utils/NyxEssenceHooks";
 
 const inter = Inter({ subsets: ['latin'] })
 
-const AcceptTerms = ({ nyxEssence, heroesOfNyxeum }: Props) => {
+const AcceptTerms = () => {
 
-    const acceptMaxAllowance = () => {
-        const approve = async () => {
-            if (!nyxEssence) {
-                return;
-            }
-            await nyxEssence?.approve(heroesOfNyxeum.address, BigNumber.from(2).pow(256).sub(1).toHexString());
-        }
-
-        approve()
-            .catch(console.error);
-    }
+    const acceptTerms = useAcceptTerms();
 
     return (
         <>
@@ -38,16 +28,11 @@ const AcceptTerms = ({ nyxEssence, heroesOfNyxeum }: Props) => {
                         If you are still up to enter to Nyxeum click on the &quot;Accept Terms&quot; button.
                     </p>
                     <br/>
-                    <button onClick={() => acceptMaxAllowance()}>ACCEPT TERMS</button>
+                    <button onClick={() => acceptTerms?.write?.()}>ACCEPT TERMS</button>
                 </div>
             </div>
         </>
     );
 };
-
-interface Props {
-    nyxEssence: any;
-    heroesOfNyxeum: any;
-}
 
 export default AcceptTerms;
