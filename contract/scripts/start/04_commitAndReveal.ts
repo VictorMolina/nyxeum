@@ -11,20 +11,23 @@ async function main() {
     const HeroesOfNyxeum = await ethers.getContractFactory("HeroesOfNyxeum");
     const heroesOfNyxeum = await HeroesOfNyxeum.attach("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");
 
-    const commitPrice = await heroesOfNyxeum.getCommitPrice();
+    const NyxeumGameV1 = await ethers.getContractFactory("NyxeumGameV1");
+    const nyxeumGameV1 = await NyxeumGameV1.attach("0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9");
+
+    const commitPrice = await nyxeumGameV1.getMintHeroCommitPrice();
     console.log(`Commit price: ${commitPrice}`)
 
-    await nyxEssence.connect(acc1).approve(heroesOfNyxeum.address, BigNumber.from(2).pow(256).sub(1));
-    console.log(`NYX approved: ${await nyxEssence.allowance(acc1.address, heroesOfNyxeum.address)}`);
+    await nyxEssence.connect(acc1).approve(nyxeumGameV1.address, BigNumber.from(2).pow(256).sub(1));
+    console.log(`NYX approved: ${await nyxEssence.allowance(acc1.address, nyxeumGameV1.address)}`);
 
     await nyxEssence.connect(acc1).buy({ value: BigNumber.from(10).pow(18)});
     console.log(`NYX bought: ${await nyxEssence.balanceOf(acc1.address)}`);
 
     for (let i = 0; i < 8; i++) {
-        await heroesOfNyxeum.connect(acc1).commit();
+        await nyxeumGameV1.connect(acc1).mintHeroCommit();
         console.log(`Committed`)
 
-        await heroesOfNyxeum.connect(acc1).reveal();
+        await nyxeumGameV1.connect(acc1).mintHeroReveal();
         console.log(`Revealed`)
 
         console.log(`NFT Minted! Total supply: ${await heroesOfNyxeum.totalSupply()}.`);

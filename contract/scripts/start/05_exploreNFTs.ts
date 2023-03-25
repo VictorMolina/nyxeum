@@ -6,7 +6,6 @@ async function main() {
     async function displayCharacter(id: BigNumber) {
         const nftMetadata = await heroesOfNyxeum.getNftMetadata(id);
         console.log(`Character Sheet #${id}:`);
-        console.log(`* Image URL: ${nftMetadata.imageUrl}`);
         console.log(`* Main Attributes:`);
         console.log(`- Strength: ${nftMetadata.strength}`);
         console.log(`- Dexterity: ${nftMetadata.dexterity}`);
