@@ -71,7 +71,7 @@ const HeroDetails = ({ tokenId }: Props) => {
             return null;
         }
         if (isAttacking) {
-            return (<HeroExploreReveal tokenId={tokenId} />)
+            return (<div>Reveal attack results!</div>)
         } else if (utils.parseEther("1").lte(balance)) {
             return (
                 <>
