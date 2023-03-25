@@ -197,13 +197,13 @@ const Whitepaper = () => {
                     is calculated through the mint phase as a random number between 0 and 27. This number is assigned
                     to one mastery level:
                     <br />
-                    0-17: Level I =&gt; Effect bonus 0%
+                    0-17: No Level =&gt; Effect bonus 0%
                     <br />
-                    18-24: Level II =&gt; Effect bonus 5%
+                    18-24: Level B =&gt; Effect bonus 5%
                     <br />
-                    25-26: Level III =&gt; Effect bonus 10%
+                    25-26: Level A =&gt; Effect bonus 10%
                     <br />
-                    27: Level IV =&gt; Effect bonus 20%
+                    27: Level S =&gt; Effect bonus 20%
                     <br />
                     <br />
                     &raquo; Tough (Strength trait): Damage absorb

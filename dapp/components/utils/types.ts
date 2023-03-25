@@ -1,8 +1,8 @@
-import { SendTransactionResult } from "@wagmi/core";
 import {BigNumber} from "ethers";
+import {TransactionReceipt} from "alchemy-sdk";
 
 export interface ContractWriteResult {
-    data: SendTransactionResult | undefined;
+    data: TransactionReceipt | undefined;
     isLoading: boolean;
     isSuccess: boolean;
     isError: boolean;

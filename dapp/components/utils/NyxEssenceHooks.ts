@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import {useAccount, useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction} from "wagmi";
 import { ContractWriteResult } from "@/components/utils/types";
 
-import { address as heroesOfNyxeumAddress } from '@/components/utils/HeroesOfNyxeumHooks';
+import { address as nyxeumGameProxyAddress } from '@/components/utils/NyxeumGameProxyHooks';
 
 export const address: `0x${string}` = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 export const abi = require("../../abis/NyxEssence.json").abi;
@@ -38,7 +38,7 @@ export function useAllowanceReader(): BigNumber | undefined {
         address: address,
         abi: abi,
         functionName: 'allowance',
-        args: [account.address || "0x0000000000000000000000000000000000000000", heroesOfNyxeumAddress],
+        args: [account.address || "0x0000000000000000000000000000000000000000", nyxeumGameProxyAddress],
         cacheOnBlock: true,
         watch: true,
     });
@@ -59,15 +59,15 @@ export function useAcceptTerms(): ContractWriteResult {
         address: address,
         abi: abi,
         functionName: 'approve',
-        args: [heroesOfNyxeumAddress, BigNumber.from(2).pow(256).sub(1)],
+        args: [nyxeumGameProxyAddress, BigNumber.from(2).pow(256).sub(1)],
         overrides: {
             from: account.address,
         },
     });
 
-    const { data, isLoading: isPrepared, isSuccess: isStarted, isError, write } = useContractWrite(config)
-    const { isSuccess } = useWaitForTransaction({
-        hash: data?.hash,
+    const { data: transaction, isLoading: isPrepared, isSuccess: isStarted, isError, write } = useContractWrite(config)
+    const { data, isSuccess } = useWaitForTransaction({
+        hash: transaction?.hash,
     });
 
     const isLoading = !isSuccess && (isPrepared || isStarted)
@@ -89,9 +89,9 @@ export function useBuy(value: BigNumber): ContractWriteResult {
         },
     });
 
-    const { data, isLoading: isPrepared, isSuccess: isStarted, isError, write } = useContractWrite(config)
-    const { isSuccess } = useWaitForTransaction({
-        hash: data?.hash,
+    const { data: transaction, isLoading: isPrepared, isSuccess: isStarted, isError, write } = useContractWrite(config)
+    const { data, isSuccess } = useWaitForTransaction({
+        hash: transaction?.hash,
     });
 
     const isLoading = !isSuccess && (isPrepared || isStarted)

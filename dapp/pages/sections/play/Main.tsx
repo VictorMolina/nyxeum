@@ -1,32 +1,54 @@
 import {useEffect, useState} from "react";
 import { BigNumber, utils } from "ethers";
 
+import useDebounce from "@/components/utils/Debounce";
 import { useBalanceOfReader as useNyxBalanceReader, useBuy } from '@/components/utils/NyxEssenceHooks';
 import {
     useBalanceOfReader as useHeroBalanceReader,
-    useCanRevealReader,
-    useMintHero,
-    useReveal
 } from "@/components/utils/HeroesOfNyxeumHooks";
+import {
+    useIsHeroMinted,
+} from "@/components/utils/NyxeumGameProxyHooks";
 
 import Hero from './Hero';
 import styles from '@/styles/Home.module.css';
+import HeroMintReveal from "@/pages/sections/play/hero-mint/HeroMintReveal";
+import HeroMintCommit from "@/pages/sections/play/hero-mint/HeroMintCommit";
 
 const Main = () => {
 
     const [loading, setLoading] = useState(false);
 
+    const [numHeroes, setNumHeroes] = useState(BigNumber.from(0));
+    const debouncedNumHeroes = useDebounce(numHeroes, 500);
+
     const nyxBalance = useNyxBalanceReader();
     const buy10Nyx = useBuy(BigNumber.from(10).pow(16));
 
     const heroBalance = useHeroBalanceReader();
-    const mintHero = useMintHero();
-    const canReveal = useCanRevealReader();
-    const reveal = useReveal();
+    const isHeroMinted = useIsHeroMinted();
 
     useEffect(() => {
-        setLoading(buy10Nyx.isLoading || mintHero.isLoading || reveal.isLoading);
-    }, [buy10Nyx, mintHero, reveal]);
+        if (heroBalance) {
+            setNumHeroes(heroBalance);
+        }
+    }, [heroBalance]);
+
+    const heroActions = (balance: BigNumber) => {
+        if (isHeroMinted) {
+            return (<HeroMintReveal />);
+        } else if (utils.parseEther("5").lte(balance)) {
+            return (<HeroMintCommit />);
+        } else {
+            return (<div>Buy NYX to mint more heroes!</div>);
+        }
+    };
+
+    const heroGallery = () => {
+        return debouncedNumHeroes &&
+        Array.from({ length: debouncedNumHeroes.toNumber() }, (v, i) => i)
+            .map((index) => <Hero key={`hero_${index}`} index={index} />);
+    }
 
     return (
         <>
@@ -38,18 +60,12 @@ const Main = () => {
                 <div>
                     <div>{`Owned NYX: ${utils.formatEther(nyxBalance || 0)}`}</div>
                     <button className={styles.button} onClick={() => buy10Nyx?.write?.()}>Buy 10 NYX for 0.01 ETH</button>
-                    {
-                        canReveal ? (<button className={styles.button} onClick={() => reveal?.write?.()}>Reveal your Hero!</button>) :
-                            (<button className={styles.button} onClick={() => mintHero?.write?.()}>Mint a Hero for 5 NYX</button>)
-                    }
+                    { heroActions(nyxBalance) }
                 </div>
             </div>
+            <br />
             <div className={styles.grid}>
-                {
-                    heroBalance &&
-                    Array.from({ length: heroBalance.toNumber() }, (v, i) => i)
-                        .map((index) => <Hero key={`hero_${index}`} index={index} />)
-                }
+                { heroGallery() }
             </div>
         </>
     )
