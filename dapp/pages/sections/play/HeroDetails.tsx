@@ -14,6 +14,7 @@ const HeroDetails = ({ tokenId }: Props) => {
 
     const hero = useGetNftMetadata(tokenId);
     const isExploring = useIsExploring(tokenId);
+    const isAttacking = false;
 
     const level = (score: number) => {
         if (score >= 27) return "S";
@@ -53,10 +54,30 @@ const HeroDetails = ({ tokenId }: Props) => {
     };
 
     const exploreActions = (balance: BigNumber) => {
+        if (isAttacking) {
+            return null;
+        }
         if (isExploring) {
             return (<HeroExploreReveal tokenId={tokenId} />)
         } else if (utils.parseEther("1").lte(balance)) {
             return (<HeroExploreCommit tokenId={tokenId} />);
+        } else {
+            return (<div>Buy NYX to explore!</div>);
+        }
+    };
+
+    const attackActions = (balance: BigNumber) => {
+        if (isExploring) {
+            return null;
+        }
+        if (isAttacking) {
+            return (<HeroExploreReveal tokenId={tokenId} />)
+        } else if (utils.parseEther("1").lte(balance)) {
+            return (
+                <>
+                    <button className={styles.button}>Attack for 1.0 NYX</button>
+                    <input className={styles.button} type="number" id="opponent" name="opponent" min="1" max="99999999" placeholder="Opponent ID"></input>
+                </>);
         } else {
             return (<div>Buy NYX to explore!</div>);
         }
@@ -76,7 +97,7 @@ const HeroDetails = ({ tokenId }: Props) => {
             { traits() }
             <div style={{display: 'grid'}}>
                 { exploreActions(nyxBalance) }
-                <button className={styles.button}>Attack for 1.0 NYX</button>
+                { attackActions(nyxBalance) }
             </div>
         </div>
     );
