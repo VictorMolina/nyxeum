@@ -1,5 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
-require('dotenv').config(options={ path: "/.env.local"});
+require('dotenv').config(options={ path: ".env.local" });
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
     },
     goerli: {
       url: process.env.ALCHEMY_TESTNET_RPC_URL,
-      accounts: [process.env.TESTNET_PRIVATE_KEY],
+      accounts: [process.env.TESTNET_PRIVATE_KEY]
     }
   },
   paths: {
