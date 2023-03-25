@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 
-import AcceptTerms from "@/pages/sections/play/AcceptTerms";
-import Main from "@/pages/sections/play/Main";
+import AcceptTerms from "@/components/game/AcceptTerms";
+import Main from "@/components/game/Main";
 
 import { useAllowanceReader } from '@/components/utils/NyxEssenceHooks';
 

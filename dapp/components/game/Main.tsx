@@ -12,8 +12,8 @@ import {
 
 import Hero from './Hero';
 import styles from '@/styles/Home.module.css';
-import HeroMintReveal from "@/pages/sections/play/hero-mint/HeroMintReveal";
-import HeroMintCommit from "@/pages/sections/play/hero-mint/HeroMintCommit";
+import HeroMintReveal from "@/components/game/hero-mint/HeroMintReveal";
+import HeroMintCommit from "@/components/game/hero-mint/HeroMintCommit";
 
 const Main = () => {
 

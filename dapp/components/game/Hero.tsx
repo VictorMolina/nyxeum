@@ -1,6 +1,6 @@
 import { useTokenOfOwnerByIndex} from "@/components/utils/HeroesOfNyxeumHooks";
 
-import HeroDetails from "@/pages/sections/play/HeroDetails";
+import HeroDetails from "@/components/game/HeroDetails";
 import useDebounce from "@/components/utils/Debounce";
 
 const Hero = ({ index }: Props) => {

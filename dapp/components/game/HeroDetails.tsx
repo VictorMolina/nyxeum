@@ -1,8 +1,8 @@
 import { useGetNftMetadata } from "@/components/utils/HeroesOfNyxeumHooks";
 import Image from "next/image";
 import {useIsExploring} from "@/components/utils/NyxeumGameProxyHooks";
-import HeroExploreCommit from "@/pages/sections/play/hero-explore/HeroExploreCommit";
-import HeroExploreReveal from "@/pages/sections/play/hero-explore/HeroExploreReveal";
+import HeroExploreCommit from "@/components/game/hero-explore/HeroExploreCommit";
+import HeroExploreReveal from "@/components/game/hero-explore/HeroExploreReveal";
 import {BigNumber, utils} from "ethers";
 
 import styles from "./HeroDetails.module.css";
