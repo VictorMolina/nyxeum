@@ -36,7 +36,8 @@ const HeroDetails = ({ tokenId }: Props) => {
         }
         return (
             <div className={[styles.label, styles.tooltip].join(" ")}>
-                {name}: {level(score || 0)}<span className={styles.tooltiptext}>{description} {effect(score || 0)}</span></div>
+                {name}: {level(score || 0)}<span className={styles.tooltiptext}>{description} {effect(score || 0)}</span>
+            </div>
         );
     }
 
@@ -49,6 +50,7 @@ const HeroDetails = ({ tokenId }: Props) => {
                 { traitCard("Skilled", "Crit chance amplifier", hero?.skilled) }
                 { traitCard("Sharp", "Magical bonus amplifier", hero?.sharp) }
                 { traitCard("Oracle", "Prevent enemy action", hero?.oracle) }
+                <div className={styles.label}></div>
             </div>
         );
     };
