@@ -1,12 +1,14 @@
 import { useGetNftMetadata } from "@/components/utils/HeroesOfNyxeumHooks";
 import Image from "next/image";
-import {useIsExploring} from "@/components/utils/NyxeumGameProxyHooks";
+import {useIsExploring, useIsAttacking} from "@/components/utils/NyxeumGameProxyHooks";
 import HeroExploreCommit from "@/components/game/hero-explore/HeroExploreCommit";
 import HeroExploreReveal from "@/components/game/hero-explore/HeroExploreReveal";
 import {BigNumber, utils} from "ethers";
 
 import styles from "./HeroDetails.module.css";
 import {useBalanceOfReader as useNyxBalanceReader} from "@/components/utils/NyxEssenceHooks";
+import HeroAttackReveal from "@/components/game/hero-attack/HeroAttackReveal";
+import HeroAttackCommit from "@/components/game/hero-attack/HeroAttackCommit";
 
 const HeroDetails = ({ tokenId }: Props) => {
 
@@ -14,7 +16,7 @@ const HeroDetails = ({ tokenId }: Props) => {
 
     const hero = useGetNftMetadata(tokenId);
     const isExploring = useIsExploring(tokenId);
-    const isAttacking = false;
+    const isAttacking = useIsAttacking(tokenId);
 
     const level = (score: number) => {
         if (score >= 27) return "S";
@@ -73,13 +75,9 @@ const HeroDetails = ({ tokenId }: Props) => {
             return null;
         }
         if (isAttacking) {
-            return (<div>Reveal attack results!</div>)
+            return (<HeroAttackReveal tokenId={tokenId} />)
         } else if (utils.parseEther("1").lte(balance)) {
-            return (
-                <>
-                    <button className={styles.button}>Attack for 1.0 NYX</button>
-                    <input className={styles.button} type="number" id="opponent" name="opponent" min="1" max="99999999" placeholder="Opponent ID"></input>
-                </>);
+            return (<HeroAttackCommit tokenId={tokenId} />);
         } else {
             return (<div>Buy NYX to explore!</div>);
         }

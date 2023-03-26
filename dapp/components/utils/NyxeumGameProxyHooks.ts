@@ -159,3 +159,77 @@ export function useExploreReveal(tokenId: BigNumber): ContractWriteResult {
 
     return { data, isLoading, isSuccess, isError, write };
 }
+
+export function useIsAttacking(tokenId: BigNumber): boolean {
+    const [isAttacking, setAttacking] = useState(false);
+    const account = useAccount();
+
+    const read = useContractRead({
+        address: address,
+        abi: abi,
+        functionName: 'isAttacking',
+        args: [tokenId],
+        overrides: {
+            from: account.address,
+        },
+        cacheOnBlock: true,
+        watch: true,
+        enabled: Boolean(account?.address) && Boolean(tokenId),
+    });
+
+    useEffect(() => {
+        if (read.isSuccess) {
+            setAttacking(read.data as unknown as boolean || false);
+        }
+    }, [read]);
+
+    return isAttacking;
+}
+
+export function useAttackCommit(tokenId: BigNumber, targetId: BigNumber | undefined): ContractWriteResult {
+    const account = useAccount();
+
+    const { config } = usePrepareContractWrite({
+        address: address,
+        abi: abi,
+        functionName: 'attackCommit',
+        args: [tokenId, targetId],
+        overrides: {
+            from: account.address,
+        },
+        enabled: Boolean(account?.address) && Boolean(tokenId) && Boolean(targetId),
+    });
+
+    const { data: transaction, isLoading: isPrepared, isSuccess: isStarted, isError, write } = useContractWrite(config)
+    const { data, isSuccess } = useWaitForTransaction({
+        hash: transaction?.hash,
+    });
+
+    const isLoading = !isSuccess && (isPrepared || isStarted)
+
+    return { data, isLoading, isSuccess, isError, write };
+}
+
+export function useAttackReveal(tokenId: BigNumber): ContractWriteResult {
+    const account = useAccount();
+
+    const { config } = usePrepareContractWrite({
+        address: address,
+        abi: abi,
+        functionName: 'attackReveal',
+        args: [tokenId],
+        overrides: {
+            from: account.address,
+        },
+        enabled: Boolean(account?.address) && Boolean(tokenId),
+    });
+
+    const { data: transaction, isLoading: isPrepared, isSuccess: isStarted, isError, write } = useContractWrite(config)
+    const { data, isSuccess } = useWaitForTransaction({
+        hash: transaction?.hash,
+    });
+
+    const isLoading = !isSuccess && (isPrepared || isStarted)
+
+    return { data, isLoading, isSuccess, isError, write };
+}
