@@ -10,7 +10,7 @@ import {useBalanceOfReader as useNyxBalanceReader} from "@/components/utils/NyxE
 import HeroAttackReveal from "@/components/game/hero-attack/HeroAttackReveal";
 import HeroAttackCommit from "@/components/game/hero-attack/HeroAttackCommit";
 
-const HeroDetails = ({ tokenId }: Props) => {
+const HeroDetails = ({ tokenId, setMessage }: Props) => {
 
     const nyxBalance = useNyxBalanceReader();
 
@@ -62,7 +62,7 @@ const HeroDetails = ({ tokenId }: Props) => {
             return null;
         }
         if (isExploring) {
-            return (<HeroExploreReveal tokenId={tokenId} />)
+            return (<HeroExploreReveal tokenId={tokenId} setMessage={setMessage} />)
         } else if (utils.parseEther("1").lte(balance)) {
             return (<HeroExploreCommit tokenId={tokenId} />);
         } else {
@@ -75,11 +75,11 @@ const HeroDetails = ({ tokenId }: Props) => {
             return null;
         }
         if (isAttacking) {
-            return (<HeroAttackReveal tokenId={tokenId} />)
+            return (<HeroAttackReveal tokenId={tokenId} setMessage={setMessage} />)
         } else if (utils.parseEther("1").lte(balance)) {
             return (<HeroAttackCommit tokenId={tokenId} />);
         } else {
-            return (<div>Buy NYX to explore!</div>);
+            return (<div>Buy NYX to attack!</div>);
         }
     };
 
@@ -105,6 +105,7 @@ const HeroDetails = ({ tokenId }: Props) => {
 
 interface Props {
     tokenId: BigNumber;
+    setMessage: (message: string | undefined) => void;
 }
 
 export default HeroDetails;

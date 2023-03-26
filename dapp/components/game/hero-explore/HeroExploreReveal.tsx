@@ -2,15 +2,13 @@ import styles from "@/styles/Home.module.css";
 import {useExploreReveal} from "@/components/utils/NyxeumGameProxyHooks";
 import {BigNumber, utils} from "ethers";
 import {useEffect, useState} from "react";
-import useDebounce from "@/components/utils/Debounce";
 
 const eventSignature = 'EndExploration(address,uint256)';
 const eventSignatureHash = utils.id(eventSignature);
 
-const HeroExploreReveal = ({ tokenId }: Props) => {
+const HeroExploreReveal = ({ tokenId, setMessage }: Props) => {
 
     const [nyxFound, setNyxFound] = useState<BigNumber | undefined>(undefined);
-    const debouncedNyxFound = useDebounce(nyxFound);
 
     const heroExploreReveal = useExploreReveal(tokenId);
 
@@ -30,19 +28,21 @@ const HeroExploreReveal = ({ tokenId }: Props) => {
     }, [heroExploreReveal?.data?.logs]);
 
     useEffect(() => {
-        setTimeout(() => setNyxFound(undefined), 2000);
-    }, [debouncedNyxFound]);
+        if (nyxFound) {
+            setMessage(`NYX found: ${utils.formatEther(nyxFound)}`);
+        }
+    }, [nyxFound, setMessage]);
 
     return (
         <>
             <button className={styles.button} onClick={() => heroExploreReveal?.write?.()}>Return from explore</button>
-            { debouncedNyxFound ? (<p>{`NYX found: ${utils.formatEther(debouncedNyxFound)}`}</p>) : null }
         </>
     );
 };
 
 interface Props {
     tokenId: BigNumber;
+    setMessage: (message: string | undefined) => void;
 }
 
 export default HeroExploreReveal;

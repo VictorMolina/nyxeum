@@ -181,11 +181,11 @@ contract NyxeumGameV1 is Initializable {
         bool nyxSent = _nyxEssence.transfer(msg.sender, nyx);
         require(nyxSent, "attackReveal. Not enough NYX!");
 
-        string memory log = buildLog(attackerId, targetId, statRoll, attackerRoll, targetRoll, nyx);
+        string memory log = buildLog(attackerId, targetId, statRoll, attackerRoll, targetRoll, nyx, _nyxEssence.decimals());
         emit EndAttack(msg.sender, attackerId, targetId, nyx, log);
     }
 
-    function buildLog(uint256 attackerId, uint256 targetId, uint8 statRoll, uint8 attackerRoll, uint8 targetRoll, uint256 nyx) internal pure returns (string memory) {
+    function buildLog(uint256 attackerId, uint256 targetId, uint8 statRoll, uint8 attackerRoll, uint8 targetRoll, uint256 nyx, uint8 nyxDecimals) internal pure returns (string memory) {
         string memory statName;
         if (statRoll == 0) {
             statName = "Strength fight.";
@@ -210,9 +210,16 @@ contract NyxeumGameV1 is Initializable {
                 log1,
                 " vs",
                 log2,
-                " Stolen NYX: ", Strings.toString(nyx)));
+                " Stolen NYX: ", division(2, nyx, 10 ** nyxDecimals)));
 
         return log;
+    }
+
+    function division(uint256 decimalPlaces, uint256 numerator, uint256 denominator) internal pure returns(string memory result) {
+        uint256 factor = 10**decimalPlaces;
+        uint256 quotient  = numerator / denominator;
+        uint256 remainder = (numerator * factor / denominator) % factor;
+        result = string(abi.encodePacked(Strings.toString(quotient), '.', Strings.toString(remainder)));
     }
 
     function isAttacking(uint256 attackerId) public view returns (bool) {

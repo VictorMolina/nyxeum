@@ -18,6 +18,7 @@ import HeroMintCommit from "@/components/game/hero-mint/HeroMintCommit";
 const Main = () => {
 
     const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState<string | undefined>();
 
     const [numHeroes, setNumHeroes] = useState(BigNumber.from(0));
     const debouncedNumHeroes = useDebounce(numHeroes, 500);
@@ -47,14 +48,19 @@ const Main = () => {
     const heroGallery = () => {
         return debouncedNumHeroes &&
         Array.from({ length: debouncedNumHeroes.toNumber() }, (v, i) => i)
-            .map((index) => <Hero key={`hero_${index}`} index={index} />);
+            .map((index) => <Hero key={`hero_${index}`} index={index} setMessage={setMessage} />);
     }
 
     return (
         <>
             <div id={'loader'}>
-                <div className={styles.maxScreen} hidden={!loading}></div>
+                <div className={styles.maxScreen} hidden={!loading && !message}></div>
                 <div className={styles.loader} hidden={!loading}></div>
+                <div className={styles.message} hidden={!message}>
+                    <p>{message}</p>
+                    <br />
+                    <button className={styles.button} onClick={() => setMessage(undefined)}>OK</button>
+                </div>
             </div>
             <div className={styles.grid}>
                 <div>

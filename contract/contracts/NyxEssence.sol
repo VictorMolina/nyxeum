@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract NyxEssence is ERC20, Ownable {
 
     constructor() ERC20("Nyx Essence", "NYX") {
-        uint initial_supply = 1_000_000 * (10**18);
+        uint initial_supply = 1_000_000 * (10 ** decimals());
         mint(address(this), initial_supply);
     }
 
