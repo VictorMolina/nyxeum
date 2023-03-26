@@ -5,7 +5,7 @@ import { ContractWriteResult } from "@/components/utils/types";
 
 import { address as nyxeumGameProxyAddress } from '@/components/utils/NyxeumGameProxyHooks';
 
-export const address: `0x${string}` = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+export const address: `0x${string}` = process.env.NYX_ESSENCE_CONTRACT_ADDRESS as `0x${string}`;
 export const abi = require("../../abis/NyxEssence.json").abi;
 
 export function useBalanceOfReader(): BigNumber {
@@ -16,7 +16,7 @@ export function useBalanceOfReader(): BigNumber {
         address: address,
         abi: abi,
         functionName: 'balanceOf',
-        args: [account.address || "0x0000000000000000000000000000000000000000"],
+        args: [account.address],
         cacheOnBlock: true,
         watch: true,
     });
@@ -38,7 +38,7 @@ export function useAllowanceReader(): BigNumber | undefined {
         address: address,
         abi: abi,
         functionName: 'allowance',
-        args: [account.address || "0x0000000000000000000000000000000000000000", nyxeumGameProxyAddress],
+        args: [account.address, nyxeumGameProxyAddress],
         cacheOnBlock: true,
         watch: true,
     });
@@ -70,7 +70,7 @@ export function useAcceptTerms(): ContractWriteResult {
         hash: transaction?.hash,
     });
 
-    const isLoading = !isSuccess && (isPrepared || isStarted)
+    const isLoading = !isSuccess && (isPrepared || isStarted);
 
     return { data, isLoading, isSuccess, isError, write };
 }

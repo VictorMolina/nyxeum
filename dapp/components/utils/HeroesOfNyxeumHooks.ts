@@ -6,7 +6,7 @@ import {
 } from "wagmi";
 import { HeroOfNyxeum } from "@/components/utils/types";
 
-export const address: `0x${string}` = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+export const address: `0x${string}` = process.env.HEROES_OF_NYXEUM_CONTRACT_ADDRESS as `0x${string}`;
 export const abi = require("../../abis/HeroesOfNyxeum.json").abi;
 
 export function useBalanceOfReader(): BigNumber {
@@ -17,7 +17,7 @@ export function useBalanceOfReader(): BigNumber {
         address: address,
         abi: abi,
         functionName: 'balanceOf',
-        args: [account.address || "0x0000000000000000000000000000000000000000"],
+        args: [account.address],
         cacheOnBlock: true,
         watch: true,
     });
@@ -39,7 +39,7 @@ export function useTokenOfOwnerByIndex(index: number): BigNumber | undefined {
         address: address,
         abi: abi,
         functionName: 'tokenOfOwnerByIndex',
-        args: [account.address || "0x0000000000000000000000000000000000000000", BigNumber.from(index)],
+        args: [account.address, BigNumber.from(index)],
         cacheOnBlock: true,
         watch: true,
     });

@@ -9,7 +9,7 @@ import {
 } from "wagmi";
 import { ContractWriteResult } from "@/components/utils/types";
 
-export const address: `0x${string}` = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
+export const address: `0x${string}` = process.env.NYXEUM_GAME_PROXY_ADDRESS as `0x${string}`;
 export const abi = require("../../abis/NyxeumGameV1.json").abi;
 
 export function useIsHeroMinted(): boolean {
