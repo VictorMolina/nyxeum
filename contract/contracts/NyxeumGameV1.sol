@@ -65,6 +65,10 @@ contract NyxeumGameV1 is Initializable {
         _exploreCommitPrice = 1 * (10**18);
         _exploreRevealPrice = 0;
         _exploreDelayInBlocks = 1;
+
+        _attackCommitPrice = 1 * (10**18);
+        _attackRevealPrice = 0;
+        _attackDelayInBlocks = 1;
     }
 
     // Getters
