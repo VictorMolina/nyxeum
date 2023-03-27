@@ -178,7 +178,8 @@ contract NyxeumGameV1 is Initializable {
             nyx = (attackerRoll - targetRoll) * (10**17);
         }
 
-        bool nyxSent = _nyxEssence.transfer(msg.sender, nyx);
+        address targetOwner = _heroesOfNyxeum.ownerOf(targetId);
+        bool nyxSent = _nyxEssence.transferFrom(targetOwner, msg.sender, nyx);
         require(nyxSent, "attackReveal. Not enough NYX!");
 
         string memory log = buildLog(attackerId, targetId, statRoll, attackerRoll, targetRoll, nyx, _nyxEssence.decimals());
