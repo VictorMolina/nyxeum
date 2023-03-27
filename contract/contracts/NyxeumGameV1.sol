@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "./NyxEssence.sol";
 import "./HeroesOfNyxeum.sol";
 
+import "hardhat/console.sol";
+
 contract NyxeumGameV1 is Initializable {
 
     // Owner
@@ -169,7 +171,7 @@ contract NyxeumGameV1 is Initializable {
         uint8 targetRoll = uint8(seed >> 16) % targetStatScore;
         uint256 drainedNyx = drainNyx(targetId, attackerRoll, targetRoll);
 
-        string memory log = buildLog(attackerId, targetId, statRoll, attackerRoll, targetRoll, drainedNyx, _nyxEssence.decimals());
+        string memory log = buildLog(attackerId, targetId, statRoll, attackerRoll, attackerStatScore, targetRoll, targetStatScore, drainedNyx, _nyxEssence.decimals());
         emit EndAttack(msg.sender, attackerId, targetId, drainedNyx, log);
     }
 
@@ -202,25 +204,25 @@ contract NyxeumGameV1 is Initializable {
         require(nyxSent, "attackReveal. Not enough NYX!");
     }
 
-    function buildLog(uint256 attackerId, uint256 targetId, uint8 statRoll, uint8 attackerRoll, uint8 targetRoll, uint256 nyx, uint8 nyxDecimals) internal pure returns (string memory) {
+    function buildLog(uint256 attackerId, uint256 targetId, uint8 statRoll, uint8 attackerRoll, uint8 attackerScore, uint8 targetRoll, uint8 targetScore, uint256 nyx, uint8 nyxDecimals) internal pure returns (string memory) {
         string memory statName;
         if (statRoll == 0) {
-            statName = "Strength fight.";
+            statName = "STR battle.";
         } else if (statRoll == 1) {
-            statName = "Dexterity fight.";
+            statName = "DEX battle.";
         } else if (statRoll == 2) {
-            statName = "Intelligence fight.";
+            statName = "INT battle.";
         }
 
         string memory log1 = string(abi.encodePacked(
                 " Hero Of Nyxeum #",
                 Strings.toString(attackerId),
-                " [", Strings.toString(attackerRoll), "]"));
+                " [", Strings.toString(attackerRoll), "/", Strings.toString(attackerScore), "]"));
 
         string memory log2 = string(abi.encodePacked(
                 " Hero Of Nyxeum #",
                 Strings.toString(targetId),
-                " [", Strings.toString(targetRoll) , "]."));
+                    " [", Strings.toString(targetRoll), "/", Strings.toString(targetScore), "]."));
 
         string memory log = string(abi.encodePacked(
                 statName,
