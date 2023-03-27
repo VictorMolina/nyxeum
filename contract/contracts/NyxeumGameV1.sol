@@ -154,40 +154,52 @@ contract NyxeumGameV1 is Initializable {
         require(block.number >= _attackCommits[attackerId].blockNumber + _attackDelayInBlocks, "attackReveal. You need to wait a bit to reveal your attack results!");
 
         uint256 targetId = _attackCommits[attackerId].targetId;
-        uint256 seed = uint256(keccak256(abi.encodePacked(msg.sender, Strings.toString(attackerId), Strings.toString(targetId), blockhash(_attackCommits[attackerId].blockNumber))));
-        delete _attackCommits[attackerId];
 
         HeroesOfNyxeum.NftMetadata memory attacker = _heroesOfNyxeum.getNftMetadata(attackerId);
         HeroesOfNyxeum.NftMetadata memory target = _heroesOfNyxeum.getNftMetadata(targetId);
 
+        uint256 seed = uint256(keccak256(abi.encodePacked(msg.sender, Strings.toString(attackerId), Strings.toString(targetId), blockhash(_attackCommits[attackerId].blockNumber))));
+        delete _attackCommits[attackerId];
+
         uint8 statRoll = uint8(seed % 3);
-        uint8 attackerStat;
-        uint8 targetStat;
-        if (statRoll == 0) {
-            attackerStat = attacker.strength;
-            targetStat = target.strength;
-        } else if (statRoll == 1) {
-            attackerStat = attacker.dexterity;
-            targetStat = target.dexterity;
-        } else if (statRoll == 2) {
-            attackerStat = attacker.intelligence;
-            targetStat = target.intelligence;
+        uint8 attackerStatScore = getStatScore(attacker, statRoll);
+        uint8 targetStatScore = getStatScore(target, statRoll);
+
+        uint8 attackerRoll = uint8(seed >> 8) % attackerStatScore;
+        uint8 targetRoll = uint8(seed >> 16) % targetStatScore;
+        uint256 drainedNyx = drainNyx(targetId, attackerRoll, targetRoll);
+
+        string memory log = buildLog(attackerId, targetId, statRoll, attackerRoll, targetRoll, drainedNyx, _nyxEssence.decimals());
+        emit EndAttack(msg.sender, attackerId, targetId, drainedNyx, log);
+    }
+
+    function getStatScore(HeroesOfNyxeum.NftMetadata memory metadata, uint8 statPosition) internal pure returns (uint8 statScore) {
+        if (statPosition == 0) {
+            statScore = metadata.strength;
+        } else if (statPosition == 1) {
+            statScore = metadata.dexterity;
+        } else if (statPosition == 2) {
+            statScore = metadata.intelligence;
+        } else {
+            statScore = 0;
         }
+    }
 
-        uint8 attackerRoll = uint8(seed >> 8) % attackerStat;
-        uint8 targetRoll = uint8(seed >> 16) % targetStat;
+    function drainNyx(uint256 targetId, uint8 attackerRoll, uint8 targetRoll) internal returns (uint256 nyx) {
+        nyx = 0;
 
-        uint256 nyx = 0;
         if (attackerRoll > targetRoll) {
             nyx = (attackerRoll - targetRoll) * (10**17);
         }
 
         address targetOwner = _heroesOfNyxeum.ownerOf(targetId);
+        uint256 targetNyx = _nyxEssence.balanceOf(targetOwner);
+        if (targetNyx < nyx) {
+            nyx = targetNyx;
+        }
+
         bool nyxSent = _nyxEssence.transferFrom(targetOwner, msg.sender, nyx);
         require(nyxSent, "attackReveal. Not enough NYX!");
-
-        string memory log = buildLog(attackerId, targetId, statRoll, attackerRoll, targetRoll, nyx, _nyxEssence.decimals());
-        emit EndAttack(msg.sender, attackerId, targetId, nyx, log);
     }
 
     function buildLog(uint256 attackerId, uint256 targetId, uint8 statRoll, uint8 attackerRoll, uint8 targetRoll, uint256 nyx, uint8 nyxDecimals) internal pure returns (string memory) {
