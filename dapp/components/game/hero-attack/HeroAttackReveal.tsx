@@ -2,6 +2,7 @@ import styles from "@/styles/Home.module.css";
 import {useAttackReveal} from "@/components/utils/NyxeumGameProxyHooks";
 import {BigNumber, utils} from "ethers";
 import {useEffect, useState} from "react";
+import Image from "next/image";
 
 const eventSignature = 'EndAttack(address,uint256,uint256,uint256,string)';
 const eventSignatureHash = utils.id(eventSignature);
@@ -32,7 +33,17 @@ const HeroAttackReveal = ({ tokenId, setMessage }: Props) => {
 
     useEffect(() => {
         if (attackLog) {
-            setMessage(attackLog);
+            const name = `Hero Of Nyxeum #${tokenId}`;
+            const popup = (
+                <div className={styles.popupMessage}>
+                    <p style={{ fontWeight: "bold"}}>Attack Log</p>
+                    <br />
+                    { attackLog.split(' // ').map((log_item, index) => (<p key={`attack_log_${index}`}>{log_item}</p>)) }
+                    <br />
+                    <button className={styles.button} onClick={() => setMessage(undefined)}>OK</button>
+                </div>
+            );
+            setMessage(popup);
         }
     }, [attackLog, setMessage]);
 
@@ -43,7 +54,7 @@ const HeroAttackReveal = ({ tokenId, setMessage }: Props) => {
 
 interface Props {
     tokenId: BigNumber;
-    setMessage: (message: string | undefined) => void;
+    setMessage: (message: JSX.Element | undefined) => void;
 }
 
 export default HeroAttackReveal;

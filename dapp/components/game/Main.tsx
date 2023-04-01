@@ -18,7 +18,7 @@ import HeroMintCommit from "@/components/game/hero-mint/HeroMintCommit";
 const Main = () => {
 
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState<string | undefined>();
+    const [message, setMessage] = useState<JSX.Element | undefined>();
 
     const [numHeroes, setNumHeroes] = useState(BigNumber.from(0));
     const debouncedNumHeroes = useDebounce(numHeroes, 500);
@@ -56,11 +56,7 @@ const Main = () => {
             <div id={'loader'}>
                 <div className={styles.maxScreen} hidden={!loading && !message}></div>
                 <div className={styles.loader} hidden={!loading}></div>
-                <div className={styles.message} hidden={!message}>
-                    <p>{message}</p>
-                    <br />
-                    <button className={styles.button} onClick={() => setMessage(undefined)}>OK</button>
-                </div>
+                { message &&  (message)}
             </div>
             <div className={styles.grid}>
                 <div>

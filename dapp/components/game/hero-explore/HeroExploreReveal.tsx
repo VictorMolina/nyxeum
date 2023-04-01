@@ -2,6 +2,7 @@ import styles from "@/styles/Home.module.css";
 import {useExploreReveal} from "@/components/utils/NyxeumGameProxyHooks";
 import {BigNumber, utils} from "ethers";
 import {useEffect, useState} from "react";
+import Image from "next/image";
 
 const eventSignature = 'EndExploration(address,uint256)';
 const eventSignatureHash = utils.id(eventSignature);
@@ -29,7 +30,17 @@ const HeroExploreReveal = ({ tokenId, setMessage }: Props) => {
 
     useEffect(() => {
         if (nyxFound) {
-            setMessage(`NYX found: ${utils.formatEther(nyxFound)}`);
+            const name = `Hero Of Nyxeum #${tokenId}`;
+            const popup = (
+                <div className={styles.popupMessage}>
+                    <p style={{ fontWeight: "bold"}}>Explore Log</p>
+                    <br />
+                    <p>NYX found: {utils.formatEther(nyxFound)}</p>
+                    <br />
+                    <button className={styles.button} onClick={() => setMessage(undefined)}>OK</button>
+                </div>
+            );
+            setMessage(popup);
         }
     }, [nyxFound, setMessage]);
 
@@ -42,7 +53,7 @@ const HeroExploreReveal = ({ tokenId, setMessage }: Props) => {
 
 interface Props {
     tokenId: BigNumber;
-    setMessage: (message: string | undefined) => void;
+    setMessage: (message: JSX.Element | undefined) => void;
 }
 
 export default HeroExploreReveal;

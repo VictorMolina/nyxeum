@@ -205,33 +205,30 @@ contract NyxeumGameV1 is Initializable {
     }
 
     function buildLog(uint256 attackerId, uint256 targetId, uint8 statRoll, uint8 attackerRoll, uint8 attackerScore, uint8 targetRoll, uint8 targetScore, uint256 nyx, uint8 nyxDecimals) internal pure returns (string memory) {
-        string memory statName;
+        string memory statLog;
         if (statRoll == 0) {
-            statName = "STR battle.";
+            statLog = "Battle type: STR // ";
         } else if (statRoll == 1) {
-            statName = "DEX battle.";
+            statLog = "Battle type: DEX // ";
         } else if (statRoll == 2) {
-            statName = "INT battle.";
+            statLog = "Battle type: INT // ";
         }
 
-        string memory log1 = string(abi.encodePacked(
-                " Hero Of Nyxeum #",
+        string memory attackerLog = string(abi.encodePacked(
+                "Attacker: Hero Of Nyxeum #",
                 Strings.toString(attackerId),
-                " [", Strings.toString(attackerRoll), "/", Strings.toString(attackerScore), "]"));
+                " // Attacker Roll: ", Strings.toString(attackerRoll), " of ", Strings.toString(attackerScore), " // "));
 
-        string memory log2 = string(abi.encodePacked(
-                " Hero Of Nyxeum #",
+        string memory targetLog = string(abi.encodePacked(
+                "Target: Hero Of Nyxeum #",
                 Strings.toString(targetId),
-                    " [", Strings.toString(targetRoll), "/", Strings.toString(targetScore), "]."));
+                " // Target Roll: ", Strings.toString(targetRoll), " of ", Strings.toString(targetScore), " // "));
 
-        string memory log = string(abi.encodePacked(
-                statName,
-                log1,
-                " vs",
-                log2,
-                " Stolen NYX: ", division(2, nyx, 10 ** nyxDecimals)));
+        string memory stolenNyxLog = string(abi.encodePacked(
+                "Stolen NYX: ",
+                division(2, nyx, 10 ** nyxDecimals)));
 
-        return log;
+        return string(abi.encodePacked(statLog, attackerLog, targetLog, stolenNyxLog));
     }
 
     function division(uint256 decimalPlaces, uint256 numerator, uint256 denominator) internal pure returns(string memory result) {

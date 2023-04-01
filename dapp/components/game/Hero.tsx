@@ -12,7 +12,7 @@ const Hero = ({ index, setMessage }: Props) => {
 
 export interface Props {
     index: number;
-    setMessage: (message: string | undefined) => void;
+    setMessage: (message: JSX.Element | undefined) => void;
 }
 
 export default Hero;

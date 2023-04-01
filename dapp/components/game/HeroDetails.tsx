@@ -105,7 +105,7 @@ const HeroDetails = ({ tokenId, setMessage }: Props) => {
 
 interface Props {
     tokenId: BigNumber;
-    setMessage: (message: string | undefined) => void;
+    setMessage: (message: JSX.Element | undefined) => void;
 }
 
 export default HeroDetails;
