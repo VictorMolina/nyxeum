@@ -34,6 +34,11 @@ type AuthenticatedPageProps = InferGetServerSidePropsType<typeof getServerSidePr
 
 export default function AuthenticatedPage({ address }: AuthenticatedPageProps) {
 
+  console.log('process.env.NEXT_PUBLIC_VERCEL_ENV', process.env.NEXT_PUBLIC_VERCEL_ENV);
+  console.log('process.env.NEXT_PUBLIC_VERCEL_URL', process.env.NEXT_PUBLIC_VERCEL_URL);
+  console.log('process.env.VERCEL_URL', process.env.VERCEL_URL);
+  console.log('process.env.NEXTAUTH_URL', process.env.NEXTAUTH_URL);
+
   const [sectionCode, setSectionCode] = useState(SectionCodes.GAME);
 
   return (
