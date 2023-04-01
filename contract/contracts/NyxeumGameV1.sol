@@ -142,6 +142,7 @@ contract NyxeumGameV1 is Initializable {
     function attackCommit(uint256 attackerId, uint256 targetId) public payable {
         require(_nyxEssence.allowance(msg.sender, address(this)) >= _attackCommitPrice, "attackCommit. Check NYX allowance");
         require(_heroesOfNyxeum.ownerOf(attackerId) == msg.sender, "attackCommit. You are not the owner of the attacker token");
+        require(_heroesOfNyxeum.ownerOf(targetId) != msg.sender, "attackCommit. You are the owner of the target!");
         require(_attackCommits[attackerId].blockNumber == 0, "attackCommit. This hero is already attacking!");
 
         _nyxEssence.transferFrom(msg.sender, address(this), _attackCommitPrice);

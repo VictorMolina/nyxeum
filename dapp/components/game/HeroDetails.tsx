@@ -77,7 +77,7 @@ const HeroDetails = ({ tokenId, setMessage }: Props) => {
         if (isAttacking) {
             return (<HeroAttackReveal tokenId={tokenId} setMessage={setMessage} />)
         } else if (utils.parseEther("1").lte(balance)) {
-            return (<HeroAttackCommit tokenId={tokenId} />);
+            return (<HeroAttackCommit tokenId={tokenId} setMessage={setMessage} />);
         } else {
             return (<div>Buy NYX to attack!</div>);
         }

@@ -30,7 +30,6 @@ const HeroExploreReveal = ({ tokenId, setMessage }: Props) => {
 
     useEffect(() => {
         if (nyxFound) {
-            const name = `Hero Of Nyxeum #${tokenId}`;
             const popup = (
                 <div className={styles.popupMessage}>
                     <p style={{ fontWeight: "bold"}}>Explore Log</p>

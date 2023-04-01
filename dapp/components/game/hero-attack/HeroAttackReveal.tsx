@@ -32,7 +32,7 @@ const HeroAttackReveal = ({ tokenId, setMessage }: Props) => {
     }, [heroAttackReveal?.data?.logs]);
 
     useEffect(() => {
-        if (attackLog) {
+        if (tokenId && attackLog) {
             const name = `Hero Of Nyxeum #${tokenId}`;
             const popup = (
                 <div className={styles.popupMessage}>
@@ -45,7 +45,7 @@ const HeroAttackReveal = ({ tokenId, setMessage }: Props) => {
             );
             setMessage(popup);
         }
-    }, [attackLog, setMessage]);
+    }, [attackLog, setMessage, tokenId]);
 
     return (
         <button className={styles.button} onClick={() => heroAttackReveal?.write?.()}>Check the attack result</button>
