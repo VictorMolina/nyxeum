@@ -25,7 +25,7 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
     }
     mapping(uint256 => NftMetadata) private _nftMetadata;
 
-    constructor(address nyxEssenceAddress) ERC721("Heroes of Nyxeum", "HNYX") {
+    constructor(address nyxEssenceAddress) ERC721("Heroes of Nyxeum", "HON") {
     }
 
     function _baseURI() internal pure override returns (string memory) {
