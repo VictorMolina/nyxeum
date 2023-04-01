@@ -47,7 +47,7 @@ const getBaseUrl = () => {
         case 'preview':
             return process.env.NEXT_PUBLIC_VERCEL_URL;
         case 'production':
-            return 'https://nyxeum.vercel.app';
+            return process.env.NEXT_PUBLIC_VERCEL_URL;
         default:
             return process.env.NEXTAUTH_URL;
     }
