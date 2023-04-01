@@ -40,10 +40,23 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
     statement: '*** Welcome to Nyxeum DApp ***',
 });
 
+const getBaseUrl = () => {
+    switch (process.env.NEXT_PUBLIC_VERCEL_ENV) {
+        case 'development':
+            return process.env.NEXT_PUBLIC_VERCEL_URL;
+        case 'preview':
+            return process.env.NEXT_PUBLIC_VERCEL_URL;
+        case 'production':
+            return 'https://nyxeum.vercel.app';
+        default:
+            return process.env.NEXTAUTH_URL;
+    }
+}
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
       <WagmiConfig client={wagmiClient}>
-          <SessionProvider refetchInterval={0} session={pageProps.session}>
+          <SessionProvider refetchInterval={0} session={pageProps.session} baseUrl={getBaseUrl()}>
               <RainbowKitSiweNextAuthProvider getSiweMessageOptions={getSiweMessageOptions}>
                   <RainbowKitProvider chains={chains} theme={darkTheme()}>
                       <Component {...pageProps} />
