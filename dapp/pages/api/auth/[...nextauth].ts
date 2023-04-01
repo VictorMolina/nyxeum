@@ -9,19 +9,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { getCsrfToken } from 'next-auth/react';
 import { SiweMessage } from 'siwe';
 
-const getNextAuthUrl = () => {
-    switch (process.env.NEXT_PUBLIC_VERCEL_ENV) {
-        case 'development':
-            return process.env.NEXT_PUBLIC_VERCEL_URL;
-        case 'preview':
-            return process.env.NEXT_PUBLIC_VERCEL_URL;
-        case 'production':
-            return process.env.NEXT_PUBLIC_VERCEL_URL;
-        default:
-            return process.env.NEXTAUTH_URL;
-    }
-}
-
 export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
     const providers = [
         CredentialsProvider({
@@ -31,7 +18,11 @@ export function getAuthOptions(req: IncomingMessage): NextAuthOptions {
                         JSON.parse(credentials?.message || '{}')
                     );
 
-                    const nextAuthUrl = getNextAuthUrl();
+                    const nextAuthUrl =
+                        process.env.NEXTAUTH_URL ||
+                        (process.env.VERCEL_URL
+                            ? `https://${process.env.VERCEL_URL}`
+                            : null);
 
                     if (!nextAuthUrl) {
                         return null;
