@@ -7,8 +7,6 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "./NyxEssence.sol";
 import "./HeroesOfNyxeum.sol";
 
-import "hardhat/console.sol";
-
 contract NyxeumGameV1 is Initializable {
 
     // Owner
@@ -44,6 +42,11 @@ contract NyxeumGameV1 is Initializable {
     uint256 private _attackDelayInBlocks;
     mapping(uint256 => Attack) private _attackCommits;
 
+    // Last Nyx Tribute
+    uint256 private _lastNyxTributeTimestamp;
+    uint256 private _nyxTributeDelayInSeconds;
+    uint256 private _nyxTributePrice;
+
     event BeginMint(address account);
     event EndMint(address account, uint256 tokenId);
 
@@ -53,10 +56,17 @@ contract NyxeumGameV1 is Initializable {
     event BeginAttack(address account, uint256 attackerId, uint256 targetId);
     event EndAttack(address account, uint256 attackerId, uint256 targetId, uint256 nyx, string logs);
 
+    event NyxTribute(uint256 success, uint256 error);
+
     function initialize(
         address nyxEssenceAddress,
         address heroesOfNyxeumAddress) public initializer {
         _owner = msg.sender;
+
+        _lastNyxTributeTimestamp = block.timestamp;
+        _nyxTributeDelayInSeconds = 24 * 60 * 60;
+        _nyxTributePrice = 1 * (10**18);
+
         _nyxEssence = NyxEssence(nyxEssenceAddress);
         _heroesOfNyxeum = HeroesOfNyxeum(heroesOfNyxeumAddress);
 
@@ -241,6 +251,35 @@ contract NyxeumGameV1 is Initializable {
 
     function isAttacking(uint256 attackerId) public view returns (bool) {
         return _attackCommits[attackerId].blockNumber > 0;
+    }
+
+    function payNyxTribute() public {
+        require(block.timestamp >= _lastNyxTributeTimestamp + _nyxTributeDelayInSeconds, "payNyxTribute. It is not the time yet.");
+
+        uint256 totalHon = _heroesOfNyxeum.totalSupply();
+        uint256 success = 0;
+        uint256 error = 0;
+        for (uint256 tokenId = 1; tokenId <= totalHon; tokenId++) {
+            if (payNyxTribute(tokenId)) {
+                success += 1;
+            } else {
+                error += 1;
+            }
+        }
+
+        emit NyxTribute(success, error);
+        _lastNyxTributeTimestamp = _lastNyxTributeTimestamp + _nyxTributeDelayInSeconds;
+    }
+
+    function payNyxTribute(uint256 tokenId) internal returns (bool) {
+        address tokenOwner = _heroesOfNyxeum.ownerOf(tokenId);
+        if (_nyxEssence.allowance(tokenOwner, address(this)) < _nyxTributePrice) {
+            return false;
+        }
+        if (_nyxEssence.balanceOf(tokenOwner) < _nyxTributePrice) {
+            return false;
+        }
+        return _nyxEssence.transferFrom(tokenOwner, address(this), _nyxTributePrice);
     }
 
     function withdrawProfits() public onlyOwner {
