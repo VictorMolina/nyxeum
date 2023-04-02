@@ -15,4 +15,5 @@ npx hardhat run scripts/deploy.ts
 
 ```shell
 npm install @openzeppelin/contracts
+npm install @chainlink/contracts
 ```

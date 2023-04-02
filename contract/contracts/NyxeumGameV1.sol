@@ -3,11 +3,12 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@chainlink/contracts/src/v0.8/AutomationCompatible.sol";
 
 import "./NyxEssence.sol";
 import "./HeroesOfNyxeum.sol";
 
-contract NyxeumGameV1 is Initializable {
+contract NyxeumGameV1 is Initializable, AutomationCompatibleInterface {
 
     // Owner
     address private _owner;
@@ -282,13 +283,25 @@ contract NyxeumGameV1 is Initializable {
         return _nyxEssence.transferFrom(tokenOwner, address(this), _nyxTributePrice);
     }
 
+    function checkUpkeep(bytes calldata /* checkData */) external view override returns (bool upkeepNeeded, bytes memory performData)
+    {
+        upkeepNeeded = block.timestamp >= _lastNyxTributeTimestamp + _nyxTributeDelayInSeconds;
+        performData = "";
+    }
+
+    function performUpkeep(bytes calldata /* performData */) external override {
+        if (block.timestamp >= _lastNyxTributeTimestamp + _nyxTributeDelayInSeconds) {
+            payNyxTribute();
+        }
+    }
+
     function withdrawProfits() public onlyOwner {
         require(address(this).balance > 0, "withdrawProfits. Profits must be greater than 0 in order to withdraw!");
         (bool sent, ) = _owner.call{value: address(this).balance}("");
         require(sent, "withdrawProfits. Failed to send ether");
     }
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == _owner, "onlyOwner. You are not the owner of this contract!");
         _;
     }
