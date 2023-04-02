@@ -14,7 +14,6 @@ const Tech = () => {
                     Next.js v13.2.1 /
                     Hardhat v2.13.0 /
                     Ethers v5.7.2 /
-                    AlchemySDK v2.5.0 /
                     Rainbowme v0.11.0
                 </p>
                 <br/>
@@ -27,33 +26,31 @@ const Tech = () => {
                         graph LR
                         
                         subgraph Web Client
-                            HEW["Hardhat"]
-                            AW["AlchemySDK"]
+                            NFTI["nft/images"]
+                            WAGMI["Wagmi"]
                         end
     
                         subgraph Ethereum
+                            NYX["NYX\n(ERC20)"]
+                            HON["Heroes of Nyxeum\n(ERC721)"]
                             PXC["Proxy\n(smart contract)"]
                             SMC["Nyxeum v1.0.0\n(smart contract)"]
                         end
                         
-                        subgraph Alchemy
-                            AA["NFT API"]
-                        end
-                        
                         subgraph Chainlink
-                            CLA["Automation\n(time-based trigger)"]
+                            CLA["Custom Logic Automation"]
                         end
                         
                         subgraph PlaygroundAI
                             PGAI["AI Text-to-Image generator"]
                         end
                         
-                        HEW-. json-rpc .->PXC-. delegatecall .->SMC
-                        HEW-. getRandomImage .->PGAI
-                        AW-. getNFTs .->AA-. uses .->PXC
-                        AW-. getOwnersForCollection .->AA
-                        AW-. getNFTMetadata .->AA
-                        CLA-. upkeep .->PXC
+                        WAGMI-. json-rpc .->NYX
+                        WAGMI-. json-rpc .->HON
+                        WAGMI-. json-rpc .->PXC-. delegatecall .->SMC
+                        PGAI-. "store image" .->NFTI
+                        CLA-. checkUpkeep .->PXC
+                        CLA-. performUpkeep .->PXC
                     `} />
             </div>
         </>
