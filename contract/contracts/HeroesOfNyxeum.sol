@@ -11,6 +11,7 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
 
     address private _minterAddress;
     Counters.Counter private _tokenIdCounter;
+    uint256 private _tokenLimit;
 
     struct NftMetadata {
         uint8 strength;
@@ -25,7 +26,8 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
     }
     mapping(uint256 => NftMetadata) private _nftMetadata;
 
-    constructor(address nyxEssenceAddress) ERC721("Heroes of Nyxeum", "HON") {
+    constructor(uint256 tokenLimit) ERC721("Heroes of Nyxeum", "HON") {
+        _tokenLimit = tokenLimit;
     }
 
     function _baseURI() internal pure override returns (string memory) {
@@ -37,6 +39,8 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
     }
 
     function mint(address buyer, uint256 seed) public onlyMinter returns (uint256 tokenId) {
+        require(_tokenIdCounter.current() < _tokenLimit, "Max amount of tokens reached");
+
         _tokenIdCounter.increment();
         tokenId = _tokenIdCounter.current();
 
@@ -55,13 +59,21 @@ contract HeroesOfNyxeum is ERC721, ERC721Enumerable, Ownable {
         _safeMint(buyer, tokenId);
     }
 
-    modifier onlyMinter {
-        require(msg.sender == _minterAddress, "onlyMinter. You are not the minter of this collection!");
-        _;
+    function getTokenLimit() public view returns (uint256) {
+        return _tokenLimit;
+    }
+
+    function setTokenLimit(uint256 tokenLimit) public onlyOwner {
+        _tokenLimit = tokenLimit;
     }
 
     function setMinter(address minterAddress) public onlyOwner {
         _minterAddress = minterAddress;
+    }
+
+    modifier onlyMinter {
+        require(msg.sender == _minterAddress, "onlyMinter. You are not the minter of this collection!");
+        _;
     }
 
     // The following functions are overrides required by Solidity.
