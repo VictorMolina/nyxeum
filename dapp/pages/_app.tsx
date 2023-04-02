@@ -1,5 +1,6 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
+import { Analytics } from '@vercel/analytics/react';
 
 import '@rainbow-me/rainbowkit/styles.css';
 import {
@@ -47,6 +48,7 @@ export default function App({ Component, pageProps }: AppProps) {
               <RainbowKitSiweNextAuthProvider getSiweMessageOptions={getSiweMessageOptions}>
                   <RainbowKitProvider chains={chains} theme={darkTheme()}>
                       <Component {...pageProps} />
+                      <Analytics />
                   </RainbowKitProvider>
               </RainbowKitSiweNextAuthProvider>
           </SessionProvider>
