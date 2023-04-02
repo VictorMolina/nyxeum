@@ -9,7 +9,7 @@ module.exports = {
     localhost: {
       chainId: 1337
     },
-    goerli: {
+    sepolia: {
       url: process.env.ALCHEMY_TESTNET_RPC_URL,
       accounts: [process.env.TESTNET_PRIVATE_KEY]
     }
