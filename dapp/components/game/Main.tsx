@@ -36,12 +36,15 @@ const Main = () => {
     }, [heroBalance]);
 
     const heroActions = (balance: BigNumber) => {
-        if (isHeroMinted) {
+        if (BigNumber.from(4).lte(debouncedNumHeroes)) {
+            return (<div>MAX number of heroes reached</div>);
+        }
+        else if (isHeroMinted) {
             return (<HeroMintReveal />);
         } else if (utils.parseEther("5").lte(balance)) {
             return (<HeroMintCommit />);
         } else {
-            return (<div>Buy NYX to mint more heroes!</div>);
+            return (<div>Buy NYX to mint up to 4 heroes</div>);
         }
     };
 
@@ -62,6 +65,9 @@ const Main = () => {
                 <div>
                     <div>{`Owned NYX: ${utils.formatEther(nyxBalance || 0)}`}</div>
                     <button className={styles.button} onClick={() => buy10Nyx?.write?.()}>Buy 10 NYX for 0.01 ETH</button>
+                </div>
+                <div>
+                    <div>{`Owned Heroes: ${debouncedNumHeroes} of 4`}</div>
                     { heroActions(nyxBalance) }
                 </div>
             </div>
