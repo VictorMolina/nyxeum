@@ -1,10 +1,10 @@
 import { ethers } from "hardhat";
+import {BigNumber} from "ethers";
 
 async function main() {
-  const NyxEssenceAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-
+  const tokenLimit = BigNumber.from(20);
   const HeroesOfNyxeum = await ethers.getContractFactory("HeroesOfNyxeum");
-  const heroesOfNyxeum = await HeroesOfNyxeum.deploy(NyxEssenceAddress);
+  const heroesOfNyxeum = await HeroesOfNyxeum.deploy(tokenLimit);
   await heroesOfNyxeum.deployed();
 
   console.log(
