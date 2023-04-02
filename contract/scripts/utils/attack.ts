@@ -12,10 +12,14 @@ async function main() {
 
     console.log(`isAttacking ${await nyxeumGameV1.connect(acc1).isAttacking(BigNumber.from(1))}`);
 
-    const attack = await nyxeumGameV1.connect(acc1).attackCommit(BigNumber.from(1), BigNumber.from(2));
+    console.log(`Attack cooldown: ${(await nyxeumGameV1.connect(acc1).getAttackCooldown(BigNumber.from(1))).toNumber() - (Date.now() / 1000)}s`);
+
+    const attack = await nyxeumGameV1.connect(acc1).attackCommit(BigNumber.from(1), BigNumber.from(9));
     await attack.wait();
 
     console.log(`isAttacking ${await nyxeumGameV1.connect(acc1).isAttacking(BigNumber.from(1))}`);
+
+    console.log(`Attack cooldown: ${(await nyxeumGameV1.connect(acc1).getAttackCooldown(BigNumber.from(1))).toNumber() - (Date.now() / 1000)}s`);
 
     const result = await nyxeumGameV1.connect(acc1).attackReveal(BigNumber.from(1));
     const receipt = await result.wait();

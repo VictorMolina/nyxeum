@@ -1,4 +1,9 @@
-import {useIsExploring, useIsAttacking} from "@/components/utils/NyxeumGameProxyHooks";
+import {
+    useIsExploring,
+    useIsAttacking,
+    useGetExploreCooldown,
+    useGetAttackCooldown
+} from "@/components/utils/NyxeumGameProxyHooks";
 import HeroExploreCommit from "@/components/game/hero-explore/HeroExploreCommit";
 import HeroExploreReveal from "@/components/game/hero-explore/HeroExploreReveal";
 import {BigNumber, utils} from "ethers";
@@ -7,20 +12,36 @@ import {useBalanceOfReader as useNyxBalanceReader} from "@/components/utils/NyxE
 import HeroAttackReveal from "@/components/game/hero-attack/HeroAttackReveal";
 import HeroAttackCommit from "@/components/game/hero-attack/HeroAttackCommit";
 import HeroCard from "@/components/game/hero-card/HeroCard";
+import {useEffect, useState} from "react";
 
 const HeroDetails = ({ tokenId, setMessage }: Props) => {
 
-    const nyxBalance = useNyxBalanceReader();
+    const [cooldown, setCooldown] = useState(0);
 
+    const nyxBalance = useNyxBalanceReader();
     const isExploring = useIsExploring(tokenId);
+    const exploreCooldown = useGetExploreCooldown(tokenId);
     const isAttacking = useIsAttacking(tokenId);
+    const attackCooldown = useGetAttackCooldown(tokenId);
+
+    useEffect(() => {
+        const maxCooldown = Math.max(cooldown, exploreCooldown, attackCooldown);
+        if (cooldown != maxCooldown) {
+            setCooldown(maxCooldown);
+        }
+        cooldown > 0 && setTimeout(() => setCooldown(cooldown - 1), 1000);
+    }, [cooldown, exploreCooldown, attackCooldown]);
 
     const exploreActions = (balance: BigNumber) => {
         if (isAttacking) {
             return null;
         }
         if (isExploring) {
-            return (<HeroExploreReveal tokenId={tokenId} setMessage={setMessage} />)
+            if (cooldown > 0) {
+                return (<div>{`Explore Cooldown: ${cooldown}s`}</div>);
+            } else {
+                return (<HeroExploreReveal tokenId={tokenId} setMessage={setMessage} />)
+            }
         } else if (utils.parseEther("1").lte(balance)) {
             return (<HeroExploreCommit tokenId={tokenId} />);
         } else {
@@ -33,7 +54,11 @@ const HeroDetails = ({ tokenId, setMessage }: Props) => {
             return null;
         }
         if (isAttacking) {
-            return (<HeroAttackReveal tokenId={tokenId} setMessage={setMessage} />)
+            if (cooldown > 0) {
+                return (<div>{`Attack Cooldown: ${cooldown}s`}</div>);
+            } else {
+                return (<HeroAttackReveal tokenId={tokenId} setMessage={setMessage} />)
+            }
         } else if (utils.parseEther("1").lte(balance)) {
             return (<HeroAttackCommit tokenId={tokenId} setMessage={setMessage} />);
         } else {

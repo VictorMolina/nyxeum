@@ -25,23 +25,33 @@ contract NyxeumGameV1 is Initializable, AutomationCompatibleInterface {
     mapping(address => uint256) private _mintHeroCommits;
 
     // Explore Commit and Reveal
+    // explorer => block_number
+    struct Explore {
+        uint256 blockNumber;
+        uint256 cooldownTimestamp;
+        bool claimed;
+    }
+
     uint256 private _exploreCommitPrice;
     uint256 private _exploreRevealPrice;
     uint256 private _exploreDelayInBlocks;
-    // explorer => block_number
-    mapping(uint256 => uint256) private _exploreCommits;
+    mapping(uint256 => Explore) private _exploreCommits;
+    uint256 private _exploreCooldownInSeconds;
 
     // Attack Commit and Reveal
     // attacker => Attack
     struct Attack {
         uint256 targetId;
         uint256 blockNumber;
+        uint256 cooldownTimestamp;
+        bool claimed;
     }
 
     uint256 private _attackCommitPrice;
     uint256 private _attackRevealPrice;
     uint256 private _attackDelayInBlocks;
     mapping(uint256 => Attack) private _attackCommits;
+    uint256 private _attackCooldownInSeconds;
 
     // Last Nyx Tribute
     uint256 private _lastNyxTributeTimestamp;
@@ -78,10 +88,12 @@ contract NyxeumGameV1 is Initializable, AutomationCompatibleInterface {
         _exploreCommitPrice = 1 * (10**18);
         _exploreRevealPrice = 0;
         _exploreDelayInBlocks = 1;
+        _exploreCooldownInSeconds = 60;
 
         _attackCommitPrice = 1 * (10**18);
         _attackRevealPrice = 0;
         _attackDelayInBlocks = 1;
+        _attackCooldownInSeconds = 180;
     }
 
     // Getters
@@ -119,69 +131,86 @@ contract NyxeumGameV1 is Initializable, AutomationCompatibleInterface {
         return _mintHeroCommits[msg.sender] > 0;
     }
 
+    function getExploreCooldown(uint256 tokenId) public view returns (uint256) {
+        return _exploreCommits[tokenId].cooldownTimestamp;
+    }
+
     function exploreCommit(uint256 tokenId) public payable {
         require(_nyxEssence.allowance(msg.sender, address(this)) >= _exploreCommitPrice, "exploreCommit. Check NYX allowance");
-        require(_heroesOfNyxeum.ownerOf(tokenId) == msg.sender, "exploreCommit. You are not the owner of this token");
-        require(_exploreCommits[tokenId] == 0, "exploreCommit. This hero is already exploring!");
+        require(_nyxEssence.balanceOf(msg.sender) >= _exploreCommitPrice, "exploreCommit. Not enough NYX");
+        require(_heroesOfNyxeum.ownerOf(tokenId) == msg.sender, "exploreCommit. You do not own this token");
+        require(_exploreCommits[tokenId].cooldownTimestamp <= block.timestamp, "exploreCommit. This hero has explore cooldown!");
+        require(_exploreCommits[tokenId].blockNumber == 0 || _exploreCommits[tokenId].claimed == true, "exploreCommit. Previous explore not claimed!");
 
         _nyxEssence.transferFrom(msg.sender, address(this), _exploreCommitPrice);
-        _exploreCommits[tokenId] = block.number;
+        _exploreCommits[tokenId] = Explore(block.number, block.timestamp + _exploreCooldownInSeconds, false);
 
         emit BeginExploration(msg.sender);
     }
 
     function exploreReveal(uint256 tokenId) public {
         require(_heroesOfNyxeum.ownerOf(tokenId) == msg.sender, "exploreReveal. You are not the owner of this token");
-        require(_exploreCommits[tokenId] != 0, "exploreReveal. This hero is not exploring!");
-        require(block.number >= _exploreCommits[tokenId] + _exploreDelayInBlocks, "exploreReveal. You need to wait a bit before returning from exploring");
+        require(_exploreCommits[tokenId].cooldownTimestamp <= block.timestamp, "exploreReveal. This hero has explore cooldown!");
+        require(_exploreCommits[tokenId].claimed == false, "exploreReveal. Explore already claimed!");
+        require(block.number >= _exploreCommits[tokenId].blockNumber + _exploreDelayInBlocks, "exploreReveal. Not enough block delay!");
 
-        uint256 roll = uint256(keccak256(abi.encodePacked(msg.sender, blockhash(_exploreCommits[tokenId]))));
-        delete _exploreCommits[tokenId];
-
+        uint256 roll = uint256(keccak256(abi.encodePacked(msg.sender, blockhash(_exploreCommits[tokenId].blockNumber))));
         uint256 nyxFound = (2 * (roll % 11)) * (10**17);
 
         bool nyxSent = _nyxEssence.transfer(msg.sender, nyxFound);
         require(nyxSent, "exploreReveal. Not enough NYX!");
 
+        Explore memory previousExplore = _exploreCommits[tokenId];
+        _exploreCommits[tokenId] = Explore(previousExplore.blockNumber, previousExplore.cooldownTimestamp, true);
+
         emit EndExploration(msg.sender, nyxFound);
     }
 
     function isExploring(uint256 tokenId) public view returns (bool) {
-        return _exploreCommits[tokenId] > 0;
+        return _exploreCommits[tokenId].blockNumber > 0 && !_exploreCommits[tokenId].claimed;
+    }
+
+    function getAttackCooldown(uint256 tokenId) public view returns (uint256) {
+        return _attackCommits[tokenId].cooldownTimestamp;
     }
 
     function attackCommit(uint256 attackerId, uint256 targetId) public payable {
         require(_nyxEssence.allowance(msg.sender, address(this)) >= _attackCommitPrice, "attackCommit. Check NYX allowance");
-        require(_heroesOfNyxeum.ownerOf(attackerId) == msg.sender, "attackCommit. You are not the owner of the attacker token");
-        require(_heroesOfNyxeum.ownerOf(targetId) != msg.sender, "attackCommit. You are the owner of the target!");
-        require(_attackCommits[attackerId].blockNumber == 0, "attackCommit. This hero is already attacking!");
+        require(_nyxEssence.balanceOf(msg.sender) >= _attackCommitPrice, "attackCommit. Not enough NYX");
+        require(_heroesOfNyxeum.ownerOf(attackerId) == msg.sender, "attackCommit. You do not own the attacker!");
+        require(_heroesOfNyxeum.ownerOf(targetId) != msg.sender, "attackCommit. You own the target!");
+        require(_attackCommits[attackerId].cooldownTimestamp <= block.timestamp, "attackCommit. This hero has attack cooldown!");
+        require(_attackCommits[attackerId].blockNumber == 0 || _attackCommits[attackerId].claimed == true, "attackCommit. Previous attack not claimed!");
 
         _nyxEssence.transferFrom(msg.sender, address(this), _attackCommitPrice);
-        _attackCommits[attackerId] = Attack(targetId, block.number);
+        _attackCommits[attackerId] = Attack(targetId, block.number, block.timestamp + _attackCooldownInSeconds, false);
 
         emit BeginAttack(msg.sender, attackerId, targetId);
     }
 
     function attackReveal(uint256 attackerId) public {
-        require(_heroesOfNyxeum.ownerOf(attackerId) == msg.sender, "attackReveal. You are not the owner of this token");
-        require(_attackCommits[attackerId].blockNumber != 0, "attackReveal. This hero is not attacking!");
-        require(block.number >= _attackCommits[attackerId].blockNumber + _attackDelayInBlocks, "attackReveal. You need to wait a bit to reveal your attack results!");
+        require(_heroesOfNyxeum.ownerOf(attackerId) == msg.sender, "attackReveal. You do not own the attacker!");
+        require(_attackCommits[attackerId].cooldownTimestamp <= block.timestamp, "attackReveal. This hero has attack cooldown!");
+        require(_attackCommits[attackerId].claimed == false, "attackReveal. Attack already claimed!");
+        require(block.number >= _attackCommits[attackerId].blockNumber + _attackDelayInBlocks, "attackReveal. Not enough block delay!");
 
         uint256 targetId = _attackCommits[attackerId].targetId;
 
         HeroesOfNyxeum.NftMetadata memory attacker = _heroesOfNyxeum.getNftMetadata(attackerId);
         HeroesOfNyxeum.NftMetadata memory target = _heroesOfNyxeum.getNftMetadata(targetId);
 
-        uint256 seed = uint256(keccak256(abi.encodePacked(msg.sender, Strings.toString(attackerId), Strings.toString(targetId), blockhash(_attackCommits[attackerId].blockNumber))));
-        delete _attackCommits[attackerId];
+        uint256 roll = uint256(keccak256(abi.encodePacked(msg.sender, Strings.toString(attackerId), Strings.toString(targetId), blockhash(_attackCommits[attackerId].blockNumber))));
 
-        uint8 statRoll = uint8(seed % 3);
+        uint8 statRoll = uint8(roll % 3);
         uint8 attackerStatScore = getStatScore(attacker, statRoll);
         uint8 targetStatScore = getStatScore(target, statRoll);
 
-        uint8 attackerRoll = uint8(seed >> 8) % attackerStatScore;
-        uint8 targetRoll = uint8(seed >> 16) % targetStatScore;
+        uint8 attackerRoll = uint8(roll >> 8) % attackerStatScore;
+        uint8 targetRoll = uint8(roll >> 16) % targetStatScore;
         uint256 drainedNyx = drainNyx(targetId, attackerRoll, targetRoll);
+
+        Attack memory previousAttack = _attackCommits[attackerId];
+        _attackCommits[attackerId] = Attack(previousAttack.targetId, previousAttack.blockNumber, previousAttack.cooldownTimestamp, true);
 
         string memory log = buildLog(attackerId, targetId, statRoll, attackerRoll, attackerStatScore, targetRoll, targetStatScore, drainedNyx, _nyxEssence.decimals());
         emit EndAttack(msg.sender, attackerId, targetId, drainedNyx, log);
@@ -250,8 +279,8 @@ contract NyxeumGameV1 is Initializable, AutomationCompatibleInterface {
         result = string(abi.encodePacked(Strings.toString(quotient), '.', Strings.toString(remainder)));
     }
 
-    function isAttacking(uint256 attackerId) public view returns (bool) {
-        return _attackCommits[attackerId].blockNumber > 0;
+    function isAttacking(uint256 tokenId) public view returns (bool) {
+        return _attackCommits[tokenId].blockNumber > 0 && !_attackCommits[tokenId].claimed;
     }
 
     function payNyxTribute() public {

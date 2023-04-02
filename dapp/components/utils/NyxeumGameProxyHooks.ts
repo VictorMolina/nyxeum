@@ -112,6 +112,33 @@ export function useIsExploring(tokenId: BigNumber): boolean {
     return isExploring;
 }
 
+export function useGetExploreCooldown(tokenId: BigNumber): number {
+    const [result, setResult] = useState(0);
+    const account = useAccount();
+
+    const read = useContractRead({
+        address: address,
+        abi: abi,
+        functionName: 'getExploreCooldown',
+        args: [tokenId],
+        overrides: {
+            from: account.address,
+        },
+        cacheOnBlock: true,
+        watch: true,
+        enabled: Boolean(account?.address) && Boolean(tokenId),
+    });
+
+    useEffect(() => {
+        if (read.isSuccess) {
+            const cooldown = (read.data as unknown as BigNumber).toNumber() - Math.round(Date.now() / 1000)
+            setResult(cooldown > 0 ? cooldown : 0);
+        }
+    }, [read]);
+
+    return result;
+}
+
 export function useExploreCommit(tokenId: BigNumber): ContractWriteResult {
     const account = useAccount();
 
@@ -184,6 +211,33 @@ export function useIsAttacking(tokenId: BigNumber): boolean {
     }, [read]);
 
     return isAttacking;
+}
+
+export function useGetAttackCooldown(tokenId: BigNumber): number {
+    const [result, setResult] = useState(0);
+    const account = useAccount();
+
+    const read = useContractRead({
+        address: address,
+        abi: abi,
+        functionName: 'getAttackCooldown',
+        args: [tokenId],
+        overrides: {
+            from: account.address,
+        },
+        cacheOnBlock: true,
+        watch: true,
+        enabled: Boolean(account?.address) && Boolean(tokenId),
+    });
+
+    useEffect(() => {
+        if (read.isSuccess) {
+            const cooldown = (read.data as unknown as BigNumber).toNumber() - Math.round(Date.now() / 1000)
+            setResult(cooldown > 0 ? cooldown : 0);
+        }
+    }, [read]);
+
+    return result;
 }
 
 export function useAttackCommit(tokenId: BigNumber, targetId: BigNumber | undefined): ContractWriteResult {
