@@ -9,6 +9,48 @@ import { HeroOfNyxeum } from "@/components/utils/types";
 export const address: `0x${string}` = process.env.HEROES_OF_NYXEUM_CONTRACT_ADDRESS as `0x${string}`;
 export const abi = require("../../abis/HeroesOfNyxeum.json").abi;
 
+export function useTotalSupply(): BigNumber {
+    const [result, setResult] = useState(BigNumber.from(0));
+
+    const totalSupply = useContractRead({
+        address: address,
+        abi: abi,
+        functionName: 'totalSupply',
+        args: [],
+        cacheOnBlock: true,
+        watch: true,
+    });
+
+    useEffect(() => {
+        if (totalSupply.isSuccess && !result.eq(BigNumber.from(totalSupply.data))) {
+            setResult(BigNumber.from(totalSupply.data));
+        }
+    }, [result, totalSupply.data, totalSupply.isSuccess]);
+
+    return result;
+}
+
+export function useGetTokenLimit(): BigNumber {
+    const [result, setResult] = useState(BigNumber.from(0));
+
+    const getTokenLimit = useContractRead({
+        address: address,
+        abi: abi,
+        functionName: 'getTokenLimit',
+        args: [],
+        cacheOnBlock: true,
+        watch: true,
+    });
+
+    useEffect(() => {
+        if (getTokenLimit.isSuccess && !result.eq(BigNumber.from(getTokenLimit.data))) {
+            setResult(BigNumber.from(getTokenLimit.data));
+        }
+    }, [result, getTokenLimit.data, getTokenLimit.isSuccess]);
+
+    return result;
+}
+
 export function useBalanceOfReader(): BigNumber {
     const [balance, setBalance] = useState(BigNumber.from(0));
     const account = useAccount();
