@@ -18,7 +18,7 @@ const config: HardhatUserConfig = {
         process.env.TESTNET_PRIVATE_KEY || '0x0000000000000000000000000000000000000000000000000000000000000000'
       ]
     },
-    goerli: {
+    sepolia: {
       url: process.env.ALCHEMY_TESTNET_RPC_URL || '',
       accounts: [ process.env.TESTNET_PRIVATE_KEY || '0x0000000000000000000000000000000000000000000000000000000000000000'],
     },
