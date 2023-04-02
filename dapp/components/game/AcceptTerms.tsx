@@ -14,6 +14,7 @@ const AcceptTerms = () => {
     return (
         <>
             <h1 className={[styles.title, inter.className].join(" ")}>Play to Nyxeum</h1>
+            { acceptTerms?.write ? (
             <div className={styles.section}>
                 <div className={["grid-element", styles.section_image].join(" ")}>
                     <Image src="/images/nyx-tokens.png" alt="NYX tokens advice" width="256" height="256" priority={true} />
@@ -31,6 +32,13 @@ const AcceptTerms = () => {
                     <button onClick={() => acceptTerms?.write?.()}>ACCEPT TERMS</button>
                 </div>
             </div>
+            ) : (
+            <div className={styles.section} style={{ textAlign: "center", width: "auto" }}>
+                <p className={inter.className}>
+                    <b>You must connect your wallet.</b>
+                </p>
+            </div>
+            ) }
         </>
     );
 };
