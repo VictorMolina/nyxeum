@@ -1,6 +1,9 @@
 .labelGroup {
     display: inline-block;
     width: 100%;
+}
+
+.traits {
     min-height: 4rem;
 }
 

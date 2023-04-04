@@ -35,7 +35,7 @@ const HeroCard = ({ tokenId }: Props) => {
 
     const traits = () => {
         return (
-            <div className={styles.labelGroup}>
+            <div className={[styles.labelGroup, styles.traits].join(' ')}>
                 { traitCard("Tough", "Damage absorb", hero?.tough) }
                 { traitCard("Powerful", "Damage amplifier", hero?.powerful) }
                 { traitCard("Precise", "Crit damage amplifier", hero?.precise) }
