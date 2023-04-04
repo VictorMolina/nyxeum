@@ -139,6 +139,7 @@ contract NyxeumGameV1 is Initializable, AutomationCompatibleInterface {
         require(_nyxEssence.allowance(msg.sender, address(this)) >= _exploreCommitPrice, "exploreCommit. Check NYX allowance");
         require(_nyxEssence.balanceOf(msg.sender) >= _exploreCommitPrice, "exploreCommit. Not enough NYX");
         require(_heroesOfNyxeum.ownerOf(tokenId) == msg.sender, "exploreCommit. You do not own this token");
+        require(!isAttacking(tokenId), "exploreCommit. This hero is attacking");
         require(_exploreCommits[tokenId].cooldownTimestamp <= block.timestamp, "exploreCommit. This hero has explore cooldown!");
         require(_exploreCommits[tokenId].blockNumber == 0 || _exploreCommits[tokenId].claimed == true, "exploreCommit. Previous explore not claimed!");
 
@@ -179,6 +180,7 @@ contract NyxeumGameV1 is Initializable, AutomationCompatibleInterface {
         require(_nyxEssence.balanceOf(msg.sender) >= _attackCommitPrice, "attackCommit. Not enough NYX");
         require(_heroesOfNyxeum.ownerOf(attackerId) == msg.sender, "attackCommit. You do not own the attacker!");
         require(_heroesOfNyxeum.ownerOf(targetId) != msg.sender, "attackCommit. You own the target!");
+        require(!isExploring(attackerId), "attackCommit. This hero is exploring");
         require(_attackCommits[attackerId].cooldownTimestamp <= block.timestamp, "attackCommit. This hero has attack cooldown!");
         require(_attackCommits[attackerId].blockNumber == 0 || _attackCommits[attackerId].claimed == true, "attackCommit. Previous attack not claimed!");
 
