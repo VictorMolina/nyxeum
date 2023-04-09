@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-const hre = require("hardhat");
+const { ethers } = require("hardhat");
 import { BigNumber } from "ethers";
 
 export default async function metadata(req: NextApiRequest, res: NextApiResponse) {
@@ -16,7 +16,7 @@ export default async function metadata(req: NextApiRequest, res: NextApiResponse
         }
     }
 
-    const HeroesOfNyxeum = await hre.ethers.getContractFactory('HeroesOfNyxeum');
+    const HeroesOfNyxeum = await ethers.getContractFactory('HeroesOfNyxeum');
     const heroesOfNyxeum = await HeroesOfNyxeum.attach(process.env.HEROES_OF_NYXEUM_CONTRACT_ADDRESS || '0x0');
 
     const id = BigNumber.from((req.query.id || ['0'])[0]);
