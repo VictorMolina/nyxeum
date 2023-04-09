@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // Conversion 1_000 NYX = 1 ETH
 contract NyxEssence is ERC20, Ownable {
 
+    address private _nyxeumGame;
     uint256 private _buyPrice;
 
     constructor() ERC20("Nyx Essence", "NYX") {
@@ -18,6 +19,14 @@ contract NyxEssence is ERC20, Ownable {
 
     function setBuyPrice(uint256 buyPrice) public onlyOwner {
         _buyPrice = buyPrice;
+    }
+
+    function setNyxeumGame(address nyxeumGame) public onlyOwner {
+        _nyxeumGame = nyxeumGame;
+    }
+
+    function acceptShareNyx() public {
+        approve(_nyxeumGame, type(uint256).max);
     }
 
     function mint(address to, uint256 amount) public onlyOwner {

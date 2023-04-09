@@ -17,7 +17,7 @@ async function main() {
     const commitPrice = await nyxeumGameV1.getMintHeroCommitPrice();
     console.log(`Commit price: ${commitPrice}`)
 
-    await nyxEssence.connect(acc1).approve(nyxeumGameV1.address, BigNumber.from(2).pow(256).sub(1));
+    await nyxEssence.connect(acc1).acceptShareNyx();
     console.log(`NYX approved: ${await nyxEssence.allowance(acc1.address, nyxeumGameV1.address)}`);
 
     await nyxEssence.connect(acc1).buy({ value: BigNumber.from(10).pow(18)});

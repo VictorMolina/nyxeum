@@ -18,10 +18,16 @@ async function main() {
   console.log('Implementation contract address: ' + implementationAddress);
 
   const HeroesOfNyxeum = await ethers.getContractFactory('HeroesOfNyxeum');
-  const heroesOfNyxeum = await HeroesOfNyxeum.attach("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");
+  const heroesOfNyxeum = await HeroesOfNyxeum.attach(HeroesOfNyxeumAddress);
 
   await heroesOfNyxeum.setMinter(proxy.address);
   console.log(`Proxy contract address ${proxy.address} is the minter of Heroes of Nyxeum ${heroesOfNyxeum.address}`);
+
+  const NyxEssence = await ethers.getContractFactory('NyxEssence');
+  const nyxEssence = await NyxEssence.attach(NyxEssenceAddress);
+
+  await nyxEssence.setNyxeumGame(proxy.address);
+  console.log(`Proxy contract address ${proxy.address} is approved for sharing NyxEssence ${nyxEssence.address}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
