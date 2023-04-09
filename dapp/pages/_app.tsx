@@ -21,8 +21,9 @@ import {
 } from '@rainbow-me/rainbowkit-siwe-next-auth';
 import { SessionProvider } from 'next-auth/react';
 
+// Use localhost as default chain in dev environments
 const { chains, provider } = configureChains(
-    [sepolia, localhost],
+    [sepolia],
     [alchemyProvider({ apiKey: 'dixigcmCcF0sH6Tzan41Q7Gp5IUgyMOh' }), publicProvider()],
 )
 
