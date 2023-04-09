@@ -108,6 +108,7 @@ contract NyxeumGameV1 is Initializable, AutomationCompatibleInterface {
     function mintHeroCommit() public payable {
         require(_nyxEssence.allowance(msg.sender, address(this)) >= _mintHeroCommitPrice, "mintHeroCommit. Check NYX allowance");
         require(_mintHeroCommits[msg.sender] == 0, "mintHeroCommit. You have already a character requested!");
+        require(_heroesOfNyxeum.totalSupply() < _heroesOfNyxeum.getTokenLimit(), "mintHeroCommit. Token Limit reached");
 
         _nyxEssence.transferFrom(msg.sender, address(this), _mintHeroCommitPrice);
         _mintHeroCommits[msg.sender] = block.number;
