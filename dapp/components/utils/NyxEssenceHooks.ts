@@ -58,8 +58,8 @@ export function useAcceptTerms(): ContractWriteResult {
     const { config } = usePrepareContractWrite({
         address: address,
         abi: abi,
-        functionName: 'approve',
-        args: [nyxeumGameProxyAddress, BigNumber.from(2).pow(256).sub(1)],
+        functionName: 'acceptShareNyx',
+        args: [],
         overrides: {
             from: account.address,
         },
