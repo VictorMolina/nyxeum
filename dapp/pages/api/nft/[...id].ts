@@ -17,7 +17,7 @@ export default async function metadata(req: NextApiRequest, res: NextApiResponse
     }
 
     const HeroesOfNyxeum = await hre.ethers.getContractFactory('HeroesOfNyxeum');
-    const heroesOfNyxeum = await HeroesOfNyxeum.attach("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");
+    const heroesOfNyxeum = await HeroesOfNyxeum.attach(process.env.HEROES_OF_NYXEUM_CONTRACT_ADDRESS || '0x0');
 
     const id = BigNumber.from((req.query.id || ['0'])[0]);
     const nftMetadata = await heroesOfNyxeum.getNftMetadata(id);

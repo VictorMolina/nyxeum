@@ -6,13 +6,13 @@ async function main() {
     const [_, acc1] = await ethers.getSigners();
 
     const NyxEssence = await ethers.getContractFactory("NyxEssence");
-    const nyxEssence = await NyxEssence.attach("0x5FbDB2315678afecb367f032d93F642f64180aa3");
+    const nyxEssence = await NyxEssence.attach(process.env.NYX_ESSENCE_CONTRACT_ADDRESS || '0x0');
 
     const HeroesOfNyxeum = await ethers.getContractFactory("HeroesOfNyxeum");
-    const heroesOfNyxeum = await HeroesOfNyxeum.attach("0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512");
+    const heroesOfNyxeum = await HeroesOfNyxeum.attach(process.env.HEROES_OF_NYXEUM_CONTRACT_ADDRESS || '0x0');
 
     const NyxeumGameV1 = await ethers.getContractFactory("NyxeumGameV1");
-    const nyxeumGameV1 = await NyxeumGameV1.attach("0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9");
+    const nyxeumGameV1 = await NyxeumGameV1.attach(process.env.NYXEUM_GAME_PROXY_ADDRESS || '0x0');
 
     const commitPrice = await nyxeumGameV1.getMintHeroCommitPrice();
     console.log(`Commit price: ${commitPrice}`)

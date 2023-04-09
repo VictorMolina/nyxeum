@@ -6,7 +6,7 @@ async function main() {
     const [_, acc1, acc2] = await ethers.getSigners();
 
     const NyxeumGameV1 = await ethers.getContractFactory("NyxeumGameV1");
-    const nyxeumGameV1 = await NyxeumGameV1.attach("0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9");
+    const nyxeumGameV1 = await NyxeumGameV1.attach(process.env.NYXEUM_GAME_PROXY_ADDRESS || '0x0');
 
     console.log(`Address: ${acc1.address}`);
 

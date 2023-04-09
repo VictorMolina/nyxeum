@@ -6,7 +6,7 @@ async function main() {
     const [signer] = await ethers.getSigners();
 
     const value = ethers.utils.parseEther("1.0");
-    const to = "0xfe9bCcA753C6681e8df6B0AA429A6C8457C447AE";
+    const to = process.env.OWNER_WALLET_ADDRESS || '0x0';
     await signer.sendTransaction({ value, to });
 
     console.log(`Address ${signer.address} has sent ${value} ETH to address ${to}`);

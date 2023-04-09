@@ -6,7 +6,7 @@ async function main() {
     const [_, acc1, acc2] = await ethers.getSigners();
 
     const NyxEssence = await ethers.getContractFactory("NyxEssence");
-    const nyxEssence = await NyxEssence.attach("0x5FbDB2315678afecb367f032d93F642f64180aa3");
+    const nyxEssence = await NyxEssence.attach(process.env.NYX_ESSENCE_CONTRACT_ADDRESS || '0x0');
 
     console.log(`Address: ${acc2.address}`);
 
