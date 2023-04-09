@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import {BigNumber} from "ethers";
 
 async function main() {
-  const tokenLimit = BigNumber.from(20);
+  const tokenLimit = BigNumber.from(100);
   const HeroesOfNyxeum = await ethers.getContractFactory("HeroesOfNyxeum");
   const heroesOfNyxeum = await HeroesOfNyxeum.deploy(tokenLimit);
   await heroesOfNyxeum.deployed();
