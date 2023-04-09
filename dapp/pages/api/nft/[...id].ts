@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-const { ethers } = require("hardhat");
-import { BigNumber } from "ethers";
+import { ethers, BigNumber } from "ethers";
 
 export default async function metadata(req: NextApiRequest, res: NextApiResponse) {
 
@@ -16,8 +15,12 @@ export default async function metadata(req: NextApiRequest, res: NextApiResponse
         }
     }
 
-    const HeroesOfNyxeum = await ethers.getContractFactory('HeroesOfNyxeum');
-    const heroesOfNyxeum = await HeroesOfNyxeum.attach(process.env.HEROES_OF_NYXEUM_CONTRACT_ADDRESS || '0x0');
+    const network = 'sepolia';
+    const provider = new ethers.providers.EtherscanProvider(network, process.env.ETHERSCAN_API_KEY);
+    let heroesOfNyxeum = new ethers.Contract(
+        process.env.HEROES_OF_NYXEUM_CONTRACT_ADDRESS || '0x0',
+        require("../../../abis/HeroesOfNyxeum.json").abi,
+        provider);
 
     const id = BigNumber.from((req.query.id || ['0'])[0]);
     const nftMetadata = await heroesOfNyxeum.getNftMetadata(id);
