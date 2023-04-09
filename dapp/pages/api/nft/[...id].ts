@@ -89,7 +89,7 @@ export default async function metadata(req: NextApiRequest, res: NextApiResponse
         "description": "Heroes of Nyxeum",
         "external_url": `https://nyxeum.vercel.app`,
         "image": `https://nyxeum.vercel.app/nft/${id}.png`,
-        "name": `Hero #${id}`,
+        "name": `Hero of Nyxeum #${id}`,
         "attributes": attributes
     });
 }
