@@ -40,7 +40,7 @@ export default function AuthenticatedPage({ address }: AuthenticatedPageProps) {
     <>
       <Head>
         <title>Nyxeum Game</title>
-        <meta name="description" content="Character Sheet Generator Dapp" />
+        <meta name="description" content="P2E Web Game" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
