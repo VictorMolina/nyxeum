@@ -150,7 +150,7 @@ const Whitepaper = () => {
                 <p className={inter.className}>
                     &raquo; <a href={"https://discord.gg/CpaQD3d7ZN"} target={"_blank"}>Nyxeum Discord</a>
                     <br/>
-                    &raquo; <a href={"mailto://nyxeum.dapp@gmail.com"} target={"_blank"}>nyxeum.dapp@gmail.com</a>
+                    &raquo; <a href="#">nyxeum.dapp[at]gmail.com</a>
                 </p>
             </div>
             <div className={styles.mono_section}>
